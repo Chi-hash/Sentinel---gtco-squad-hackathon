@@ -170,20 +170,23 @@ Sentinel integrates deeply with Squad APIs:
 ## Project Structure
 
 ```bash
-sentinel-fraud-detector/
+sentinel/
 ├── backend/
 │   ├── server.js
 │   ├── webhook/
+│   │   └── receiver.js
 │   ├── ai-engine/
+│   │   ├── scorer.js
+│   │   └── rules.js
 │   ├── squad-client/
-│   ├── db/
-│   └── routes/
-├── ml-service/
-│   └── model_service.py
+│   │   └── api.js
+│   └── db/
+│       └── database.js
 ├── frontend/
 │   ├── index.html
 │   ├── style.css
 │   └── script.js
 ├── demo/
 │   └── simulate.js
+├── .env
 └── README.md
