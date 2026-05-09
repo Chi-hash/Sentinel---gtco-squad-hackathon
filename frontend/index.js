@@ -175,7 +175,7 @@ function toggleSidebar() {
 }
 
 // ── UTILS ─────────────────────────────────────────
-const money = (n) => "₦" + Number(n).toLocaleString();
+const money = (n) => "₦" + (Number(n) / 100).toLocaleString();
 const scCol = (s) =>
   s < 31 ? "var(--jade)" : s < 71 ? "var(--amber)" : "var(--crimson)";
 const pillCls = (t) =>
@@ -184,6 +184,9 @@ const rowCls = (t) =>
   t === "GREEN" ? "row-g" : t === "AMBER" ? "row-a" : "row-r";
 function nowTime() {
   return new Date().toTimeString().slice(0, 8);
+}
+function fmtTime(iso) {
+  return iso ? new Date(iso).toLocaleTimeString("en-GB").slice(0, 8) : "—";
 }
 
 // ── FEED ──────────────────────────────────────────
@@ -197,24 +200,26 @@ function renderFeed() {
 }
 
 function buildRow(t, anim) {
-  const codes = t.codes.length
-    ? t.codes.map((c) => `<span class="sig">${c}</span>`).join("")
+  const _reasons = t.reasons || t.codes || [];
+  const codes = _reasons.length
+    ? _reasons.map((c) => `<span class="sig">${c}</span>`).join("")
     : `<span style="color:var(--t3);font-family:var(--ff-mono);font-size:10px">—</span>`;
 
+  const _status = t.status || (t.tier === "GREEN" ? "approved" : t.tier === "AMBER" ? "flagged" : "blocked");
   const status =
-    t.status === "approved"
+    _status === "approved"
       ? `<span class="st-ok">● APPROVED</span>`
-      : t.status === "flagged"
+      : _status === "flagged"
         ? `<span class="st-fl">◆ FLAGGED</span>`
         : `<span class="st-blk">■ BLOCKED</span>`;
 
   const action =
-    t.tier === "AMBER" && t.status === "flagged"
+    t.tier === "AMBER" && _status === "flagged"
       ? `<button class="tbl-btn tb-rv" onclick="event.stopPropagation();openModal('${t.ref}')">REVIEW</button>`
       : "";
 
   return `<tr class="${rowCls(t.tier)} ${anim ? "slide-in" : ""}" onclick="openModal('${t.ref}')">
-    <td class="tc-time">${t.time}</td>
+    <td class="tc-time">${t.time || fmtTime(t.timestamp)}</td>
     <td class="tc-amt">${money(t.amount)}</td>
     <td class="tc-email">${t.email}</td>
     <td>
@@ -240,13 +245,13 @@ function pushTransaction(t) {
   if (t.tier === "RED") {
     S.blocked++;
     bumpKPI("kpi-blocked-card", "kpi-blocked");
-    S.saved += t.amount;
+    S.saved += Math.round(t.amount / 100);
     bumpKPI("kpi-saved-card", "kpi-saved");
   }
   bumpKPI("kpi-total-card", "kpi-total");
   syncKPIs();
   nudgeChart(t.score);
-  document.getElementById("last-time").textContent = t.time;
+  document.getElementById("last-time").textContent = t.time || fmtTime(t.timestamp);
 
   const tbody = document.getElementById("txn-body");
   const tmp = document.createElement("tbody");
@@ -304,12 +309,13 @@ function openModal(ref) {
   const t = S.transactions.find((x) => x.ref === ref);
   if (!t) return;
   const col = scCol(t.score);
-  const mtag = t.model_trained
+  const mtag = t.model_trained !== false
     ? `<span class="m-tag on">● AI MODEL ACTIVE</span>`
     : `<span class="m-tag off">◌ LEARNING MODE</span>`;
 
-  const reasons = t.codes.length
-    ? t.codes
+  const _reasons = t.reasons || t.codes || [];
+  const reasons = _reasons.length
+    ? _reasons
         .map(
           (c) =>
             `<div class="rsn-row"><span class="rsn-code" style="color:${col}">${c}</span><span class="rsn-desc">${RSN[c] || "Risk signal triggered"}</span></div>`,
@@ -350,9 +356,9 @@ function openModal(ref) {
           <div><div class="m-sec-lbl">Basic Info</div>
             <div class="i2col">
               <div class="ibox"><div class="ibox-lbl">Amount</div><div class="ibox-val">${money(t.amount)}</div></div>
-              <div class="ibox"><div class="ibox-lbl">Time</div><div class="ibox-val">${t.time}</div></div>
+              <div class="ibox"><div class="ibox-lbl">Time</div><div class="ibox-val">${t.time || fmtTime(t.timestamp)}</div></div>
               <div class="ibox"><div class="ibox-lbl">Customer</div><div class="ibox-val">${t.email}</div></div>
-              <div class="ibox"><div class="ibox-lbl">Status</div><div class="ibox-val">${t.status.toUpperCase()}</div></div>
+              <div class="ibox"><div class="ibox-lbl">Status</div><div class="ibox-val">${(t.status || (t.tier === "GREEN" ? "approved" : t.tier === "AMBER" ? "flagged" : "blocked")).toUpperCase()}</div></div>
             </div></div>
           <div><div class="m-sec-lbl">AI Trust Score</div>
             <div class="gauge-row">
@@ -407,8 +413,8 @@ function disputeModal(ref) {
             <div class="evid-ttl">■ Sentinel AI Evidence Package</div>
             <div class="evid-body">
               Trust Score: <strong style="color:var(--crimson)">${t.score}/100 — HIGH RISK</strong><br/>
-              Signals: <strong>${t.codes.join(" + ") || "ANOMALY_DETECTED"}</strong><br/>
-              Model: <strong>${t.model_trained ? "Isolation Forest (trained)" : "Heuristic fallback"}</strong><br/>
+              Signals: <strong>${(t.reasons || t.codes || []).join(" + ") || "ANOMALY_DETECTED"}</strong><br/>
+              Model: <strong>${t.model_trained !== false ? "Rule Engine + Z-Score" : "Heuristic fallback"}</strong><br/>
               Deviation: <strong>${t.features?.amount_vs_avg ?? "—"}× above customer avg</strong>
             </div>
           </div>
@@ -553,12 +559,16 @@ function nudgeChart(score) {
 
 // ── SOCKET ─────────────────────────────────────────
 function initSocket() {
-  /*
-  const socket = io('http://localhost:3000');
-  socket.on('connect',()=>{ document.getElementById('conn-dot').className='conn-dot live'; document.getElementById('conn-label').textContent='Live'; });
-  socket.on('disconnect',()=>{ document.getElementById('conn-dot').className='conn-dot error'; document.getElementById('conn-label').textContent='Disconnected'; });
+  const socket = io();
+  socket.on('connect', () => {
+    document.getElementById('conn-dot').className = 'conn-dot live';
+    document.getElementById('conn-label').textContent = 'Live';
+  });
+  socket.on('disconnect', () => {
+    document.getElementById('conn-dot').className = 'conn-dot error';
+    document.getElementById('conn-label').textContent = 'Disconnected';
+  });
   socket.on('new_transaction', pushTransaction);
-  */
 }
 
 // ── DEMO ──────────────────────────────────────────
