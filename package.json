@@ -1,0 +1,23 @@
+{
+  "name": "sentinel",
+  "version": "1.0.0",
+  "description": "AI-powered transaction trust scoring for Squad merchants",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js"
+  },
+  "keywords": [],
+  "author": "NovaCore",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.16.0",
+    "better-sqlite3": "^12.9.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
