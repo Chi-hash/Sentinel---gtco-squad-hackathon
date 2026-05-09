@@ -12,11 +12,8 @@
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
-
   <div class="noise"></div>
   <div class="grid-bg"></div>
-
-  <!-- HEADER -->
   <header class="header">
     <div class="header-left">
       <button class="toggle-btn" id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar">
@@ -48,10 +45,10 @@
       </div>
       <div class="last-txn">Last: <span id="last-time">—</span></div>
       <button class="icon-btn" onclick="toggleSettings()">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-          <circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.4"/>
-          <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-        </svg>
+      <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
+        <path d="M11 1L20 6V16L11 21L2 16V6L11 1Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <circle cx="11" cy="11" r="2.5" fill="currentColor"/>
+      </svg>
       </button>
     </div>
   </header>
@@ -62,14 +59,9 @@
     DEMO MODE — Simulated transactions active
     <button onclick="toggleDemo()" id="demo-btn">Disable</button>
   </div>
-
-  <!-- APP SHELL -->
   <div class="app-shell" id="app-shell">
-
-    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-inner">
-
         <div class="kpi-stack">
           <div class="kpi" id="kpi-total-card">
             <div class="kpi-ey">Transactions</div>
@@ -111,15 +103,9 @@
 
       </div>
     </aside>
-
-    <!-- MOBILE OVERLAY -->
     <div class="mob-overlay" id="mob-overlay" onclick="toggleSidebar()"></div>
-
-    <!-- MAIN CONTENT -->
     <main class="content">
-
-      <!-- CHART — full width in content -->
-      <div class="panel chart-panel">
+       <div class="panel chart-panel">
         <div class="panel-hd">
           <div class="panel-title">Trust Score Trend</div>
           <div class="chart-leg">
@@ -133,8 +119,6 @@
           <canvas id="trendChart"></canvas>
         </div>
       </div>
-
-      <!-- FEED -->
       <div class="panel">
         <div class="panel-hd">
           <div class="panel-title">Live Transaction Feed</div>
@@ -153,8 +137,6 @@
           </table>
         </div>
       </div>
-
-      <!-- DISPUTES -->
       <div class="panel">
         <div class="panel-hd" onclick="toggleDisputes()" style="cursor:pointer">
           <div class="panel-title">
@@ -180,21 +162,7 @@
 
     </main>
   </div>
-
-  <!-- SETTINGS DRAWER -->
-  <div class="drw-overlay" id="drw-overlay" onclick="toggleSettings()"></div>
-  <div class="drw" id="drw">
-    <div class="drw-hd"><span>Settings</span><button onclick="toggleSettings()">✕</button></div>
-    <div class="drw-bd">
-      <div class="drw-row"><span>Block Threshold</span>
-        <div class="sldr-row"><input type="range" min="0" max="100" value="70"
-          oninput="document.getElementById('tval').textContent=this.value"/><span id="tval">70</span></div></div>
-      <div class="drw-row"><span>AMBER Alerts</span><label class="tog"><input type="checkbox" checked/><span class="tog-t"></span></label></div>
-      <div class="drw-row"><span>Auto-Refund RED</span><label class="tog"><input type="checkbox" checked/><span class="tog-t"></span></label></div>
-      <div class="drw-row"><span>SMS Alerts</span><label class="tog"><input type="checkbox"/><span class="tog-t"></span></label></div>
-    </div>
-  </div>
-
+  <div id="settings-mount"></div>
   <div id="toasts"></div>
   <div id="modal-mount"></div>
 
