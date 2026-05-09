@@ -31,6 +31,17 @@ Sentinel solves this by introducing **real-time AI-driven fraud prevention direc
 
 ---
 
+## Impact
+
+Sentinel brings real-time fraud protection to SMEs and fintech merchants who cannot afford enterprise fraud systems.
+
+It shifts fraud detection from:
+After-money-lost detection  
+to  
+Before-money-leaves prevention  
+
+This reduces financial loss, improves trust in digital payments, and strengthens the security layer of Nigeria’s growing fintech ecosystem.
+
 ## Solution
 
 Sentinel introduces a **hybrid AI fraud engine** that:
@@ -137,24 +148,50 @@ Sentinel follows a **hybrid microservice architecture**:
 
 ### Model: Isolation Forest (Unsupervised)
 
-Sentinel does not rely on labelled fraud data. Instead, it learns normal transaction behavior and detects anomalies.
+Sentinel uses Isolation Forest to detect anomalies in transaction behavior without requiring labeled fraud data.
 
-### Features Used:
+Why this works:
 
-- Transaction amount normalization  
-- Hour of day patterns  
-- Transaction velocity (1hr / 24hr)  
-- Device fingerprint changes  
-- Payment channel behavior  
-- Customer historical averages  
+- Fraud patterns evolve constantly  
+- Labeled fraud data is limited  
+- Works well with behavioral outliers  
+- Efficient for real-time inference  
 
-### Output:
-
-- Trust Score (0–100)  
-- Fraud Tier (GREEN / AMBER / RED)  
-- Explainable Reason Codes  
+This makes Sentinel adaptive, lightweight, and scalable for live payment environments.
 
 ---
+
+## Why Sentinel Matters
+
+Sentinel transforms fraud detection from a post-incident process into a real-time defense system.
+
+It enables:
+
+- Prevention instead of reaction  
+- Instant merchant protection  
+- Reduced financial loss  
+- Smarter dispute handling  
+- Accessible fraud intelligence for SMEs  
+
+---
+
+## Demo Flow
+
+1. A customer initiates a payment on Squad
+2. Sentinel instantly intercepts the webhook
+3. AI engine evaluates behavioral risk in milliseconds
+4. Fraud detected → dashboard flashes RED live
+5. Transaction is automatically blocked or refunded
+6. Merchant sees explanation of *why* it was flagged
+7. System logs fraud evidence for dispute handling
+
+---
+
+## Summary
+
+Sentinel is a real-time fraud intelligence layer that protects digital payments by combining machine learning, behavioral analytics, and automated decision systems.
+
+It turns fraud detection into a proactive, explainable, and real-time experience.
 
 ## Squad API Integration
 
