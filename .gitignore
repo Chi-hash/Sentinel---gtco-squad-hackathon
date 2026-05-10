@@ -1,4 +1,4 @@
 .env
-*.sqlitenode_modules/
+*.sqlite
 node_modules/
-.DS_Storenode_modules/
+.DS_Store

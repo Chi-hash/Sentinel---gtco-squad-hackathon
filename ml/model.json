@@ -1,0 +1,30 @@
+{
+  "features": [
+    "amount",
+    "hour",
+    "is_first_time",
+    "velocity",
+    "bin_count",
+    "amount_vs_avg"
+  ],
+  "contamination": 0.2,
+  "accuracy": 0.992,
+  "precision": 0.98,
+  "recall": 0.98,
+  "f1": 0.98,
+  "thresholds": {
+    "high_risk_score": -0.631675,
+    "medium_risk_score": -0.61755
+  },
+  "feature_weights": {
+    "amount": 0.999999,
+    "hour": 1e-06,
+    "is_first_time": 0.0,
+    "velocity": 0.0,
+    "bin_count": 0.0,
+    "amount_vs_avg": 0.0
+  },
+  "trained_on": 500,
+  "fraud_cases": 100,
+  "normal_cases": 400
+}
