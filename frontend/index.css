@@ -750,6 +750,19 @@ body {
   color: var(--jade);
   border-color: rgba(46, 213, 115, 0.2);
 }
+.m-report {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.m-report:hover {
+  background: rgba(34, 197, 94, 0.2);
+}
 .pill-a {
   background: var(--amber-dim);
   color: var(--amber);
@@ -794,21 +807,20 @@ body {
   color: rgba(180, 190, 210, 0.80);
 }
 
-.st-ok {
-  font-family: var(--ff-mono);
-  font-size: 10px;
-  color: var(--jade);
-}
-.st-fl {
-  font-family: var(--ff-mono);
-  font-size: 10px;
-  color: var(--amber);
-}
+.st-ok,
+.st-fl,
 .st-blk {
   font-family: var(--ff-mono);
   font-size: 10px;
-  color: var(--crimson);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
+
+.st-ok { color: var(--jade); }
+.st-fl { color: var(--amber); }
+.st-blk { color: var(--crimson); }
 
 .tbl-btn {
   padding: 4px 10px;

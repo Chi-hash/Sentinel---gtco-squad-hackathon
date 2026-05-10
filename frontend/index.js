@@ -38,7 +38,7 @@ const RSN = {
   ANOMALY_DETECTED:'ML model anomaly flag',
 };
 
-// DEMO SIMULATION FUNCTIONS - ADDED THESE
+// DEMO SIMULATION FUNCTIONS
 function simulateRed() {
   const newTxn = {
     ref: 'SQT-' + Math.floor(Math.random() * 9000 + 9000),
@@ -126,8 +126,8 @@ function nowTime() { return new Date().toTimeString().slice(0,8); }
 function fmtTime(iso) { return iso ? new Date(iso).toLocaleTimeString('en-GB').slice(0,8) : '—'; }
 
  function sigClass(code) {
-  const critical = ['HIGH_VELOCITY','ANOMALY_DETECTED','GEO_MISMATCH','ML_HIGH_RISK'];
-  const warning = ['AMOUNT_SPIKE','OFF_HOURS'];
+const critical = ['HIGH_VELOCITY','ANOMALY_DETECTED','GEO_MISMATCH','ML_HIGH_RISK','ROUND_AMOUNT'];
+  const warning = ['AMOUNT_SPIKE','OFF_HOURS','ML_MEDIUM_RISK', 'FIRST_TIME_PAYER', 'BIN_PATTERN', 'NEW_DEVICE'];
   if (critical.includes(code)) return 'sig-c';
   if (warning.includes(code)) return 'sig-w';
   return 'sig-i';
@@ -144,10 +144,10 @@ function buildRow(t, anim) {
     : `<span style="color:var(--t3);font-family:var(--ff-mono);font-size:10px">—</span>`;
 
   const status = t.status === 'approved'
-    ? `<span class="st-ok">● APPROVED</span>`
+    ? `<span class="st-ok"><span>●</span><span>APPROVED</span></span>`
     : t.status === 'flagged'
-    ? `<span class="st-fl">◆ FLAGGED</span>`
-    : `<span class="st-blk">■ BLOCKED</span>`;
+    ? `<span class="st-fl"><span>◆</span><span>FLAGGED</span></span>`
+    : `<span class="st-blk"><span>■</span><span>BLOCKED</span></span>`;
 
   const action = (t.tier === 'AMBER' && t.status === 'flagged')
     ? `<button class="tbl-btn tb-rv" onclick="event.stopPropagation();openModal('${t.ref}')">REVIEW</button>`
@@ -254,6 +254,7 @@ function showToast(t) {
 function openModal(ref) {
   const t = S.transactions.find(x => x.ref === ref);
   if (!t) return;
+  // window._currentTxn = t; 
   const col = scCol(t.score);
   const mtag = t.model_trained !== false
     ? `<span class="m-tag on">● AI MODEL ACTIVE</span>`
@@ -279,7 +280,10 @@ function openModal(ref) {
       <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-top">
           <div><div class="m-ref-lbl">Transaction Reference</div><div class="m-ref-val">${t.ref}</div></div>
+          <div style="display:flex;gap:8px;align-items:center;">
+          <button class="m-report" onclick="event.stopPropagation(); generateReport('${t.ref}')"> Report</button>
           <button class="m-x" onclick="closeModal()">✕</button>
+          </div>
         </div>
         <div class="modal-body">
           <div><div class="m-sec-lbl">Basic Info</div>
@@ -304,6 +308,127 @@ function openModal(ref) {
         <div class="modal-acts">${acts}</div>
       </div>
     </div>`;
+}
+function generateReport(ref) {
+  const t = S.transactions.find(x => x.ref === ref);
+  if (!t) return;
+
+  const col = t.tier === 'GREEN' ? '#22c55e' : t.tier === 'AMBER' ? '#f59e0b' : '#ef4444';
+  const fmtMoney = n => '₦' + Number(n).toLocaleString();
+
+  const reasons = (t.codes || []).map(c => {
+    const desc = {
+      HIGH_VELOCITY: 'Multiple rapid transactions from same email',
+      OFF_HOURS: 'Transaction during 1-4 AM high-risk window',
+      AMOUNT_SPIKE: 'Amount 3x+ above merchant average',
+      NEW_DEVICE: 'Unrecognized device fingerprint',
+      GEO_MISMATCH: 'Billing country ≠ IP location',
+      ANOMALY_DETECTED: 'ML model flagged statistical anomaly',
+      ROUND_AMOUNT: 'Suspiciously round amount (fraud fingerprint)',
+      FIRST_TIME_PAYER: 'No prior transaction history',
+      BIN_PATTERN: 'Card prefix linked to multiple emails',
+      BEHAVIOUR_MISMATCH: 'Sudden jump from small to large amounts',
+      HIGH_VALUE_NEW: 'First-timer with unusually high payment'
+    }[c] || 'Risk signal triggered';
+    return `<div style="margin-bottom:10px;padding:10px;background:#0b0b0b;border-radius:8px;border-left:3px solid #ef4444">
+      <div style="font-family:monospace;font-size:12px;color:#ef4444">${c}</div>
+      <div style="font-size:13px;color:#bbb">${desc}</div>
+    </div>`;
+  }).join('') || '<div style="color:#666">No risk signals</div>';
+
+  const features = t.features ? Object.entries(t.features).map(([k,v]) => {
+    const c = parseFloat(v) > 2 ? '#ef4444' : parseFloat(v) > 1 ? '#f59e0b' : '#22c55e';
+    return `<tr><td style="padding:6px 0;color:#888">${k}</td><td style="text-align:right;color:${c};font-weight:700">${v}</td></tr>`;
+  }).join('') : '';
+
+  const plain = t.tier === 'GREEN'
+    ? `This transaction from <b>${t.email}</b> is <b>low risk</b>. Amount of ${fmtMoney(t.amount)} is normal. Score ${t.score}/100 — safe to process.`
+    : t.tier === 'AMBER'
+    ? `This transaction needs <b>review</b>. ${(t.codes||[]).length} risk signal(s) detected. Score ${t.score}/100 — verify before fulfilling.`
+    : `This transaction is <b>high risk</b> and blocked. ${(t.codes||[]).length} critical signals triggered. Score ${t.score}/100 — fraud likely.`;
+
+  const html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Report — ${t.ref}</title>
+<style>
+body{font-family:sans-serif;background:#0b0b0b;color:#e5e5e5;padding:32px 16px}
+.wrap{max-width:640px;margin:0 auto;background:#141414;border-radius:16px;padding:32px;border:1px solid #222}
+h1{margin:0 0 4px;font-size:20px} .ref{color:${col};font-family:monospace}
+.badge{display:inline-block;margin:12px 0;padding:4px 12px;border:1px solid ${col};color:${col};border-radius:20px;font-size:11px;font-weight:700}
+.sec{margin:24px 0} h2{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#888;margin-bottom:10px;padding-left:8px;border-left:3px solid ${col}}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.box{background:#0b0b0b;border:1px solid #222;border-radius:8px;padding:12px}
+.lbl{font-size:10px;color:#666;text-transform:uppercase;margin-bottom:4px}
+.val{font-size:16px;font-weight:700}
+.score{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.sc{width:60px;height:60px;border-radius:50%;border:3px solid ${col};display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:${col}}
+.plain{background:#0b0b0b;border:1px solid #222;border-radius:8px;padding:14px;font-size:13px;color:#ccc;line-height:1.7}
+.raw{background:#080808;border:1px solid #1a1a1a;border-radius:8px;padding:12px;font-family:monospace;font-size:10px;color:#777;white-space:pre-wrap}
+table{width:100%;font-size:13px}
+.foot{text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid #222;color:#555;font-size:11px}
+</style></head><body>
+<div class="wrap">
+  <h1>Sentinel Report</h1>
+  <div class="ref">${t.ref}</div>
+  <span class="badge">${t.tier} RISK</span>
+
+  <div class="sec"><h2>Summary</h2>
+    <div class="grid">
+      <div class="box"><div class="lbl">Amount</div><div class="val">${fmtMoney(t.amount)}</div></div>
+      <div class="box"><div class="lbl">Customer</div><div class="val" style="font-size:13px">${t.email}</div></div>
+      <div class="box"><div class="lbl">Time</div><div class="val" style="font-size:13px">${t.time||'—'}</div></div>
+      <div class="box"><div class="lbl">Status</div><div class="val">${(t.status||t.tier).toUpperCase()}</div></div>
+    </div>
+  </div>
+
+  <div class="sec"><h2>AI Trust Score</h2>
+    <div class="score">
+      <div class="sc">${t.score}</div>
+      <div>
+        <div style="font-weight:700;color:${col}">${t.tier} — ${t.score}/100</div>
+        <div style="font-size:12px;color:#999">${t.tier==='GREEN'?'Safe to process':t.tier==='AMBER'?'Review recommended':'Automatic block'}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec"><h2>Timeline</h2>
+    <div class="box">
+      <div style="font-size:12px;color:#aaa;line-height:1.8">
+        <b>${t.time||'—'}</b> — Transaction received (${fmtMoney(t.amount)})<br>
+        <b>${t.time||'—'}</b> — Risk analysis started (R01–R08)<br>
+        <b>${t.time||'—'}</b> — ${(t.codes||[]).length} signal(s) detected<br>
+        <b>${t.time||'—'}</b> — Decision: ${(t.status||t.tier).toUpperCase()}<br>
+        <b>${new Date().toLocaleTimeString('en-GB')}</b> — Report generated
+      </div>
+    </div>
+  </div>
+
+  <div class="sec"><h2>Rules Triggered (${(t.codes||[]).length})</h2>${reasons}</div>
+
+  <div class="sec"><h2>ML Output</h2>
+    <div class="grid">
+      <div class="box"><div class="lbl">Score</div><div class="val" style="color:${col}">${t.score}/100</div></div>
+      <div class="box"><div class="lbl">Confidence</div><div class="val" style="font-size:13px">${t.tier==='GREEN'?'High — Legit':t.tier==='AMBER'?'Moderate':'High — Fraud'}</div></div>
+    </div>
+  </div>
+
+  ${features?`<div class="sec"><h2>Feature Deviations</h2><table>${features}</table></div>`:''}
+
+  <div class="sec"><h2>Plain English</h2><div class="plain">${plain}</div></div>
+
+  <div class="sec"><h2>Raw Payload</h2><div class="raw">${JSON.stringify(t,null,2)}</div></div>
+
+  <div class="foot">Sentinel &middot; ${new Date().toLocaleString('en-GB')} &middot; Confidential</div>
+</div></body></html>`;
+
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `report-${t.ref}.html`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 
 function closeModal() { document.getElementById('modal-mount').innerHTML = ''; }
@@ -453,7 +578,7 @@ function nudgeChart(score) {
   chart.update('none');
 }
 
-//SOCKET - FIXED to be optional (won't break if socket.io not loaded)
+//SOCKET
 function initSocket() {
   if (typeof io !== 'undefined') {
     const socket = io('http://localhost:3000');
@@ -473,7 +598,7 @@ function initSocket() {
   }
 }
 
-//DEMO - FIXED timing
+//DEMO
 function startDemo() {
   if (S.demoTimer) clearInterval(S.demoTimer);
   S.demoTimer = setInterval(() => {
@@ -481,7 +606,7 @@ function startDemo() {
     if (r < 0.18) simulateRed();
     else if (r < 0.45) simulateAmber();
     else simulateGreen();
-  }, 4000); // Changed back to 4 seconds like original
+  }, 4000);
 }
 
 function toggleDemo() {
