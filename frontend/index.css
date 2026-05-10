@@ -1,8 +1,3 @@
-/* ══════════════════════════════════════════════════
-   SENTINEL — styles.css  v2
-   Editorial Fintech Noir
-══════════════════════════════════════════════════ */
-
 @import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap");
 
 :root {
@@ -32,11 +27,14 @@
 
   --hh: 54px;
   --rh: 30px;
-  --sw: 260px; /* sidebar width expanded */
-  --sw-collapsed: 0px; /* sidebar width collapsed */
+  --sw: 260px;
+  --sw-collapsed: 0px;
 
   --r: 8px;
   --r-lg: 12px;
+
+  /* Responsive font scaling */
+  font-size: 13px;
 }
 
 /* ── RESET ── */
@@ -56,7 +54,7 @@ body {
   background: var(--bg);
   color: var(--t1);
   font-family: var(--ff-body);
-  font-size: 13px;
+  font-size: 1rem;
   line-height: 1.5;
 }
 
@@ -351,7 +349,7 @@ body {
   border-right-color: transparent;
 }
 .sidebar-inner {
-  width: var(--sw); /* fixed so content doesn't reflow during animation */
+  width: var(--sw);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -764,17 +762,36 @@ body {
 }
 
 .sig {
-  display: inline-block;
-  padding: 2px 6px;
-  background: var(--bg3);
-  border: 1px solid var(--line2);
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
   border-radius: 4px;
   font-family: var(--ff-mono);
-  font-size: 9px;
-  color: var(--t2);
-  margin-right: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
   white-space: nowrap;
-  letter-spacing: 0.2px;
+  line-height: 1;
+  margin: 0 4px 3px 0;
+  text-transform: uppercase;
+}
+
+.sig-c {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: rgba(255, 100, 100, 0.95);
+}
+
+.sig-w {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: rgba(255, 180, 60, 0.95);
+}
+
+.sig-i {
+  background: rgba(148, 163, 184, 0.06);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  color: rgba(180, 190, 210, 0.80);
 }
 
 .st-ok {
@@ -1419,11 +1436,64 @@ body {
   border-radius: 2px;
 }
 
-/* ── RESPONSIVE ── */
+/* ═══════════════════════════════════════════════
+   RESPONSIVE DESIGN - PRODUCTION GRADE
+   ═══════════════════════════════════════════════ */
+
+/* ── TABLET & MOBILE (≤ 768px) ── */
 @media (max-width: 768px) {
   :root {
+    font-size: 12px;
+    --hh: 48px;
+    --rh: 26px;
     --sw: 260px;
   }
+
+  /* Header */
+  .header {
+    padding: 0 12px;
+    gap: 10px;
+  }
+  .header-left {
+    gap: 10px;
+  }
+  .header-right {
+    gap: 8px;
+  }
+  .logo-name {
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+  .logo-sub {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+  .logo-hex {
+    width: 28px;
+    height: 28px;
+  }
+  .conn-pill {
+    padding: 3px 8px;
+    font-size: 9px;
+  }
+  .last-txn {
+    display: none;
+  }
+  .merchant-chip {
+    display: none;
+  }
+
+  /* Demo ribbon */
+  .demo-ribbon {
+    padding: 0 12px;
+    font-size: 9px;
+  }
+  .demo-ribbon button {
+    font-size: 8px;
+    padding: 2px 8px;
+  }
+
+  /* Sidebar - mobile slide */
   .sidebar {
     position: fixed;
     top: calc(var(--hh) + var(--rh));
@@ -1441,10 +1511,431 @@ body {
   .sidebar.collapsed {
     transform: translateX(-100%);
   }
-  .merchant-chip {
-    display: none;
+
+  /* KPI */
+  .kpi {
+    padding: 12px 16px;
   }
-  .last-txn {
-    display: none;
+  .kpi-num {
+    font-size: 28px;
+  }
+  .kpi-lbl {
+    font-size: 10px;
+  }
+  .kpi-sep {
+    margin: 0 16px;
+  }
+
+  /* Sim panel */
+  .sim-panel {
+    padding: 12px 16px 16px;
+  }
+  .sim-btn {
+    font-size: 8px;
+    padding: 6px 0;
+  }
+
+  /* Content panels */
+  .panel-hd {
+    padding: 10px 14px;
+  }
+  .panel-title {
+    font-size: 12px;
+  }
+  .panel-meta {
+    font-size: 9px;
+  }
+
+  /* Chart */
+  .chart-wrap {
+    padding: 12px 14px 16px;
+    height: 160px;
+  }
+  .chart-leg {
+    gap: 12px;
+    font-size: 8px;
+  }
+
+  /* Table */
+  .tbl {
+    font-size: 11px;
+    min-width: 580px;
+  }
+  .tbl thead th {
+    padding: 7px 12px;
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+  .tbl td {
+    padding: 9px 12px;
+  }
+  .tc-amt {
+    font-size: 12px;
+  }
+  .tc-time,
+  .tc-email {
+    font-size: 9px;
+  }
+  .sc-val {
+    font-size: 11px;
+  }
+  .pill {
+    font-size: 8px;
+    padding: 2px 7px;
+  }
+  .sig {
+    font-size: 8px;
+    padding: 2px 5px;
+  }
+  .tbl-btn {
+    font-size: 8px;
+    padding: 3px 8px;
+  }
+
+  /* Toasts */
+  .toast {
+    min-width: 220px;
+    max-width: 280px;
+    font-size: 11px;
+    padding: 10px 14px;
+  }
+
+  /* Modal */
+  .modal {
+    max-width: 92vw;
+  }
+  .modal-top {
+    padding: 16px 18px 12px;
+  }
+  .modal-body {
+    padding: 16px 18px;
+    gap: 14px;
+  }
+  .modal-acts {
+    padding: 12px 18px 16px;
+  }
+  .ibox-val {
+    font-size: 12px;
+  }
+  .gauge {
+    width: 56px;
+    height: 56px;
+  }
+  .gauge-sc {
+    font-size: 18px;
+  }
+
+  /* Settings modal */
+  .sm {
+    max-width: 92vw;
+  }
+  .sm-hd {
+    padding: 14px 18px 12px;
+  }
+  .sm-row {
+    padding: 11px 18px;
+  }
+  .sm-foot {
+    padding: 12px 18px;
+  }
+}
+
+/* ── VERY SMALL PHONES (≤ 400px) ── */
+@media (max-width: 400px) {
+  :root {
+    font-size: 11px;
+    --hh: 44px;
+    --rh: 24px;
+    --sw: 240px;
+  }
+
+  /* Header */
+  .header {
+    padding: 0 10px;
+    gap: 8px;
+  }
+  .toggle-btn {
+    width: 28px;
+    height: 28px;
+    padding: 5px;
+  }
+  .logo-name {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+  }
+  .logo-sub {
+    font-size: 7px;
+  }
+  .logo-hex {
+    width: 24px;
+    height: 24px;
+  }
+  .icon-btn {
+    width: 28px;
+    height: 28px;
+  }
+  .conn-pill {
+    font-size: 8px;
+    padding: 2px 6px;
+  }
+
+  /* Demo ribbon */
+  .demo-ribbon {
+    padding: 0 10px;
+    font-size: 8px;
+    gap: 6px;
+  }
+  .demo-ribbon button {
+    font-size: 7px;
+    padding: 1px 6px;
+  }
+
+  /* KPI */
+  .kpi {
+    padding: 10px 14px;
+  }
+  .kpi-num {
+    font-size: 24px;
+  }
+  .kpi-lbl {
+    font-size: 9px;
+  }
+  .kpi-ey {
+    font-size: 8px;
+    letter-spacing: 1.5px;
+  }
+  .kpi-sep {
+    margin: 0 14px;
+  }
+
+  /* Sim panel */
+  .sim-panel {
+    padding: 10px 14px 14px;
+  }
+  .sim-ey {
+    font-size: 8px;
+  }
+  .sim-btn {
+    font-size: 7px;
+    padding: 5px 0;
+    letter-spacing: 0.5px;
+  }
+
+  /* Content panels */
+  .panel-hd {
+    padding: 8px 12px;
+  }
+  .panel-title {
+    font-size: 11px;
+    gap: 6px;
+  }
+  .panel-meta {
+    font-size: 8px;
+  }
+  .open-pill {
+    font-size: 8px;
+    padding: 2px 6px;
+  }
+
+  /* Chart */
+  .chart-wrap {
+    padding: 10px 12px 14px;
+    height: 140px;
+  }
+  .chart-leg {
+    gap: 10px;
+    font-size: 7px;
+  }
+  .ldot {
+    width: 5px;
+    height: 5px;
+  }
+
+  /* Table */
+  .tbl {
+    font-size: 10px;
+    min-width: 520px;
+  }
+  .tbl thead th {
+    padding: 6px 10px;
+    font-size: 7px;
+    letter-spacing: 0.8px;
+  }
+  .tbl td {
+    padding: 8px 10px;
+  }
+  .tc-amt {
+    font-size: 11px;
+  }
+  .tc-time,
+  .tc-email {
+    font-size: 8px;
+  }
+  .sc-val {
+    font-size: 10px;
+  }
+  .pill {
+    font-size: 7px;
+    padding: 2px 6px;
+    letter-spacing: 1px;
+  }
+  .sig {
+    font-size: 7px;
+    padding: 1px 4px;
+    margin-right: 2px;
+  }
+  .st-ok,
+  .st-fl,
+  .st-blk {
+    font-size: 9px;
+  }
+  .tbl-btn {
+    font-size: 7px;
+    padding: 2px 6px;
+  }
+
+  /* Toasts */
+  #toasts {
+    bottom: 10px;
+    right: 10px;
+    left: 10px;
+    align-items: center;
+  }
+  .toast {
+    min-width: unset;
+    max-width: 100%;
+    width: 100%;
+    font-size: 10px;
+    padding: 9px 12px;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    padding: 10px;
+  }
+  .modal {
+    max-width: 100%;
+    max-height: 92vh;
+  }
+  .modal-top {
+    padding: 14px 14px 10px;
+  }
+  .modal-body {
+    padding: 14px;
+    gap: 12px;
+  }
+  .modal-acts {
+    padding: 10px 14px 14px;
+    gap: 6px;
+  }
+  .mb {
+    padding: 6px 12px;
+    font-size: 9px;
+  }
+  .m-ref-val {
+    font-size: 12px;
+  }
+  .m-x {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+  .i2col {
+    gap: 6px;
+  }
+  .ibox {
+    padding: 8px 10px;
+  }
+  .ibox-val {
+    font-size: 11px;
+  }
+  .gauge {
+    width: 50px;
+    height: 50px;
+    border-width: 2px;
+  }
+  .gauge-sc {
+    font-size: 16px;
+  }
+  .g-desc {
+    font-size: 10px;
+  }
+  .rsn-code {
+    font-size: 10px;
+  }
+  .rsn-desc {
+    font-size: 10px;
+  }
+  .ft-row {
+    font-size: 9px;
+  }
+  .raw {
+    font-size: 9px;
+    padding: 10px;
+    max-height: 110px;
+  }
+
+  /* Settings modal */
+  .sm-overlay {
+    padding: 10px;
+  }
+  .sm {
+    max-width: 100%;
+  }
+  .sm-hd {
+    padding: 12px 14px 10px;
+  }
+  .sm-hd-icon {
+    width: 28px;
+    height: 28px;
+  }
+  .sm-hd-title {
+    font-size: 12px;
+  }
+  .sm-hd-sub {
+    font-size: 8px;
+  }
+  .sm-x {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+  .sm-sec-lbl {
+    padding: 10px 14px 4px;
+    font-size: 8px;
+  }
+  .sm-row {
+    padding: 10px 14px;
+  }
+  .sm-row-name {
+    font-size: 11px;
+  }
+  .sm-row-desc {
+    font-size: 8px;
+  }
+  .sldr-row input[type="range"] {
+    width: 70px;
+  }
+  .sldr-row span {
+    font-size: 10px;
+  }
+  .sm-foot {
+    padding: 10px 14px;
+  }
+  .sm-save,
+  .sm-cancel {
+    padding: 6px 14px;
+    font-size: 9px;
+  }
+
+  /* Evidence box */
+  .evid-box {
+    padding: 10px;
+  }
+  .evid-ttl {
+    font-size: 8px;
+  }
+  .evid-body {
+    font-size: 10px;
   }
 }

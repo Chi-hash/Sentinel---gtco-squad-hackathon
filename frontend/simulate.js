@@ -16,7 +16,7 @@ function _post(payload) {
 function _pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function _rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
-// ── Identity pools ────────────────────────────────────────────────────────────
+//Identity pools
 
 const FIRST = [
   'chidi','ngozi','emeka','amara','bola','tunde','kemi','seun',
@@ -36,7 +36,7 @@ function _email(addNoise) {
   return name + suffix + '@' + _pick(DOMAINS);
 }
 
-// ── Card BINs (Visa / Mastercard / Verve) ─────────────────────────────────────
+// Card BINs (Visa / Mastercard / Verve)
 // GREEN  → known-good personal/corporate cards
 // AMBER  → prepaid or recently-seen high-risk BINs
 // RED    → BINs associated with test/stolen card patterns
@@ -44,7 +44,7 @@ const BINS_GREEN = ['411111','451273','476148','428616','435592','438857','46220
 const BINS_AMBER = ['539983','527841','521456','545501','512345','530956','556084'];
 const BINS_RED   = ['400000','490116','402918','401177','403245','400115','492950'];
 
-// ── Amounts (in kobo — 1 NGN = 100 kobo) ──────────────────────────────────────
+// Amounts (in kobo — 1 NGN = 100 kobo)
 // GREEN:  ₦1,200 – ₦45,000  (everyday POS / e-commerce)
 // AMBER:  ₦55,000 – ₦150,000 (above-average, warrants review)
 // RED:    ₦200,000 – ₦500,000 (very high, typical card fraud amount)
@@ -61,7 +61,7 @@ const AMOUNTS_RED = [
   38000000, 42000000, 45000000, 48000000, 50000000,
 ];
 
-// ── Timestamp helpers ─────────────────────────────────────────────────────────
+// Timestamp helpers 
 
 function _isoAt(hour) {
   const d = new Date();
@@ -69,7 +69,7 @@ function _isoAt(hour) {
   return d.toISOString();
 }
 
-// ── Exported simulate functions ───────────────────────────────────────────────
+//Exported simulate functions 
 
 function simulateGreen() {
   // Normal daytime purchase: 9 AM – 6 PM, sensible amount, recognised card

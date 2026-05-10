@@ -6,7 +6,8 @@
 function R01(transaction, db) {
   try {
     const avg = db.getMerchantAverage();
-    if (transaction.amount > 3 * avg) return { score: 30, reason: 'AMOUNT_SPIKE' };
+    if (transaction.amount > 3 * avg)
+      return { score: 30, reason: "AMOUNT_SPIKE" };
     return { score: 0, reason: null };
   } catch {
     return { score: 0, reason: null };
@@ -18,7 +19,7 @@ function R02(transaction, db) {
   try {
     const hist = db.getUserHistory(transaction.email);
     if (transaction.amount > 50000000 && (!hist || hist.length === 0))
-      return { score: 25, reason: 'HIGH_VALUE_NEW' };
+      return { score: 25, reason: "HIGH_VALUE_NEW" };
     return { score: 0, reason: null };
   } catch {
     return { score: 0, reason: null };
@@ -29,7 +30,7 @@ function R02(transaction, db) {
 function R03(transaction, db) {
   try {
     const watHour = (new Date(transaction.timestamp).getUTCHours() + 1) % 24;
-    if (watHour >= 1 && watHour <= 4) return { score: 20, reason: 'OFF_HOURS' };
+    if (watHour >= 1 && watHour <= 4) return { score: 20, reason: "OFF_HOURS" };
     return { score: 0, reason: null };
   } catch {
     return { score: 0, reason: null };
@@ -40,7 +41,7 @@ function R03(transaction, db) {
 function R04(transaction, db) {
   try {
     const recent = db.getRecentByEmail(transaction.email, 5);
-    if (recent.length >= 3) return { score: 35, reason: 'HIGH_VELOCITY' };
+    if (recent.length >= 3) return { score: 35, reason: "HIGH_VELOCITY" };
     return { score: 0, reason: null };
   } catch {
     return { score: 0, reason: null };
@@ -51,7 +52,7 @@ function R04(transaction, db) {
 function R05(transaction, db) {
   try {
     const emails = db.getRecentByBin(transaction.card_bin, 60);
-    if (emails.length >= 5) return { score: 40, reason: 'BIN_PATTERN' };
+    if (emails.length >= 5) return { score: 40, reason: "BIN_PATTERN" };
     return { score: 0, reason: null };
   } catch {
     return { score: 0, reason: null };
@@ -62,8 +63,10 @@ function R05(transaction, db) {
 function R06(transaction, db) {
   try {
     const hist = db.getUserHistory(transaction.email);
-    if (!hist || hist.length === 0 || transaction.amount <= 30000000) return { score: 0, reason: null };
-    if (hist.every((t) => t.amount < 10000000)) return { score: 15, reason: 'BEHAVIOUR_MISMATCH' };
+    if (!hist || hist.length === 0 || transaction.amount <= 30000000)
+      return { score: 0, reason: null };
+    if (hist.every((t) => t.amount < 10000000))
+      return { score: 15, reason: "BEHAVIOUR_MISMATCH" };
     return { score: 0, reason: null };
   } catch {
     return { score: 0, reason: null };
@@ -74,7 +77,8 @@ function R06(transaction, db) {
 function R07(transaction, db) {
   try {
     const hist = db.getUserHistory(transaction.email);
-    if (!hist || hist.length === 0) return { score: 10, reason: 'FIRST_TIME_PAYER' };
+    if (!hist || hist.length === 0)
+      return { score: 10, reason: "FIRST_TIME_PAYER" };
     return { score: 0, reason: null };
   } catch {
     return { score: 0, reason: null };
@@ -84,7 +88,8 @@ function R07(transaction, db) {
 // Round millions in kobo are a common fraud/testing fingerprint vs realistic retail totals.
 function R08(transaction, db) {
   try {
-    if (transaction.amount % 1000000 === 0) return { score: 15, reason: 'ROUND_AMOUNT' };
+    if (transaction.amount % 1000000 === 0)
+      return { score: 15, reason: "ROUND_AMOUNT" };
     return { score: 0, reason: null };
   } catch {
     return { score: 0, reason: null };
