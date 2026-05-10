@@ -1,25 +1,28 @@
 
 const S = {
-  total:142, flagged:8, blocked:3, saved:285000,
+  total:156, flagged:11, blocked:5, saved:312000,
   transactions:[], disputes:[],
   demoMode:true, demoTimer:null,
   sidebarOpen: true,
 };
 
 const SEED = [
-  { ref:'SQT-8821', time:'14:38:12', amount:42000000,  email:'f***@gmail.com',   score:91, tier:'RED',   codes:['HIGH_VELOCITY','OFF_HOURS'],              status:'blocked',  model_trained:true,  features:{amount_vs_avg:4.2,velocity_1hr:4,hour_of_day:2}  },
-  { ref:'SQT-8820', time:'14:37:55', amount:1550000,   email:'n***@yahoo.com',   score:58, tier:'AMBER', codes:['AMOUNT_SPIKE'],                            status:'flagged',  model_trained:true,  features:{amount_vs_avg:2.1,velocity_1hr:1,hour_of_day:14} },
-  { ref:'SQT-8819', time:'14:37:20', amount:820000,    email:'k***@hotmail.com', score:12, tier:'GREEN', codes:[],                                          status:'approved', model_trained:true,  features:{amount_vs_avg:0.8,velocity_1hr:0,hour_of_day:14} },
-  { ref:'SQT-8818', time:'14:36:40', amount:21000000,  email:'x***@gmail.com',   score:87, tier:'RED',   codes:['HIGH_VELOCITY','OFF_HOURS','AMOUNT_SPIKE'], status:'blocked',  model_trained:false, features:{amount_vs_avg:5.1,velocity_1hr:5,hour_of_day:3}  },
-  { ref:'SQT-8817', time:'14:35:10', amount:500000,    email:'j***@gmail.com',   score:22, tier:'GREEN', codes:[],                                          status:'approved', model_trained:true,  features:{amount_vs_avg:0.5,velocity_1hr:0,hour_of_day:11} },
-  { ref:'SQT-8816', time:'14:34:50', amount:7500000,   email:'m***@live.com',    score:45, tier:'AMBER', codes:['NEW_DEVICE'],                              status:'flagged',  model_trained:true,  features:{amount_vs_avg:1.8,velocity_1hr:1,hour_of_day:13} },
-  { ref:'SQT-8815', time:'14:33:20', amount:1200000,   email:'a***@gmail.com',   score:18, tier:'GREEN', codes:[],                                          status:'approved', model_trained:true,  features:{amount_vs_avg:1.0,velocity_1hr:0,hour_of_day:13} },
-  { ref:'SQT-8814', time:'14:32:05', amount:34000000,  email:'q***@yahoo.com',   score:79, tier:'RED',   codes:['ANOMALY_DETECTED'],                        status:'blocked',  model_trained:true,  features:{amount_vs_avg:3.8,velocity_1hr:2,hour_of_day:1}  },
+  { ref:'SQT-8906', time:'14:38:12', amount:42000000,  email:'e***a74@gmail.com',   score:91, tier:'RED',   codes:['HIGH_VELOCITY','OFF_HOURS'],               status:'blocked',  model_trained:true,  features:{amount_vs_avg:4.2,velocity_1hr:4,hour_of_day:2}  },
+  { ref:'SQT-8905', time:'14:37:55', amount:6800000,   email:'n***i@yahoo.com',     score:54, tier:'AMBER', codes:['AMOUNT_SPIKE'],                            status:'flagged',  model_trained:true,  features:{amount_vs_avg:2.1,velocity_1hr:1,hour_of_day:21} },
+  { ref:'SQT-8904', time:'14:37:20', amount:350000,    email:'k***e@hotmail.com',   score:11, tier:'GREEN', codes:[],                                          status:'approved', model_trained:true,  features:{amount_vs_avg:0.8,velocity_1hr:0,hour_of_day:11} },
+  { ref:'SQT-8903', time:'14:36:40', amount:28000000,  email:'o***u31@gmail.com',   score:88, tier:'RED',   codes:['HIGH_VELOCITY','OFF_HOURS','AMOUNT_SPIKE'], status:'blocked',  model_trained:false, features:{amount_vs_avg:5.1,velocity_1hr:5,hour_of_day:3}  },
+  { ref:'SQT-8902', time:'14:35:10', amount:1250000,   email:'t***e@gmail.com',     score:19, tier:'GREEN', codes:[],                                          status:'approved', model_trained:true,  features:{amount_vs_avg:0.9,velocity_1hr:0,hour_of_day:10} },
+  { ref:'SQT-8901', time:'14:34:50', amount:9500000,   email:'a***a@live.com',      score:47, tier:'AMBER', codes:['NEW_DEVICE'],                              status:'flagged',  model_trained:true,  features:{amount_vs_avg:1.9,velocity_1hr:1,hour_of_day:22} },
+  { ref:'SQT-8900', time:'14:33:20', amount:750000,    email:'f***i@gmail.com',     score:15, tier:'GREEN', codes:[],                                          status:'approved', model_trained:true,  features:{amount_vs_avg:0.7,velocity_1hr:0,hour_of_day:14} },
+  { ref:'SQT-8899', time:'14:32:05', amount:35000000,  email:'c***a58@outlook.com', score:82, tier:'RED',   codes:['ANOMALY_DETECTED','OFF_HOURS'],            status:'blocked',  model_trained:true,  features:{amount_vs_avg:4.0,velocity_1hr:3,hour_of_day:2}  },
+  { ref:'SQT-8898', time:'14:31:40', amount:2000000,   email:'b***n@yahoo.com',     score:24, tier:'GREEN', codes:[],                                          status:'approved', model_trained:true,  features:{amount_vs_avg:1.1,velocity_1hr:0,hour_of_day:15} },
+  { ref:'SQT-8897', time:'14:30:15', amount:12000000,  email:'s***l@gmail.com',     score:61, tier:'AMBER', codes:['AMOUNT_SPIKE','NEW_DEVICE'],               status:'flagged',  model_trained:true,  features:{amount_vs_avg:2.8,velocity_1hr:2,hour_of_day:20} },
 ];
 
 const SEED_DSP = [
-  { id:'DSP-001', ref:'SQT-8821', amount:42000000, reason:'Unauthorized transaction', score:91, status:'open' },
-  { id:'DSP-002', ref:'SQT-8818', amount:21000000, reason:'Item not received',        score:87, status:'open' },
+  { id:'DSP-001', ref:'SQT-8906', amount:42000000, reason:'Unauthorized transaction', score:91, status:'open' },
+  { id:'DSP-002', ref:'SQT-8903', amount:28000000, reason:'Card not present fraud',   score:88, status:'open' },
+  { id:'DSP-003', ref:'SQT-8899', amount:35000000, reason:'Item not received',        score:82, status:'open' },
 ];
 
 const RSN = {
