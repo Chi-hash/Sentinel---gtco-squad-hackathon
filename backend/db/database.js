@@ -84,5 +84,3 @@ module.exports = {
   getAllTransactions,
   getMerchantAverage
 };
-
-initDB();

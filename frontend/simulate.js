@@ -2,8 +2,10 @@
 // Randomised realistic transaction pools. Each call picks from pools so
 // every simulated event looks different in the dashboard.
 
-let _simCount = 900 + Math.floor(Math.random() * 50); // start near SQT-9xx
-function _ref() { return 'SQT-' + (++_simCount); }
+// Timestamp + counter so refs are always unique across page reloads and sessions.
+const _epoch = Date.now();
+let _simCount = 0;
+function _ref() { return 'SIM-' + _epoch + '-' + (++_simCount); }
 
 function _post(payload) {
   fetch('/webhook/squad', {
@@ -30,11 +32,25 @@ const LAST = [
 ];
 const DOMAINS = ['gmail.com','yahoo.com','outlook.com','hotmail.com','live.com'];
 
-function _email(addNoise) {
-  const name = _pick(FIRST) + '.' + _pick(LAST);
-  const suffix = addNoise ? _rand(10, 99) : '';    // fraud accounts often have number suffixes
-  return name + suffix + '@' + _pick(DOMAINS);
+function _email() {
+  return _pick(FIRST) + '.' + _pick(LAST) + '@' + _pick(DOMAINS);
 }
+
+// Small fixed pools for RED/AMBER so the same emails repeat across simulations.
+// This builds up transaction history so velocity and spike rules fire after a few hits.
+const BAD_EMAILS = [
+  'emeka.obi74@gmail.com',   'chisom.eze91@yahoo.com',
+  'damilola.aliyu38@live.com', 'obinna.usman55@outlook.com',
+];
+const AMBER_EMAILS = [
+  'sola.adeyemi@gmail.com', 'yemi.dike@yahoo.com',
+  'ife.garba@hotmail.com',  'ada.nwosu@live.com',
+];
+
+let _badIdx   = 0;
+let _amberIdx = 0;
+function _badEmail()   { return BAD_EMAILS[_badIdx++   % BAD_EMAILS.length];   }
+function _amberEmail() { return AMBER_EMAILS[_amberIdx++ % AMBER_EMAILS.length]; }
 
 // Card BINs (Visa / Mastercard / Verve)
 // GREEN  → known-good personal/corporate cards
@@ -72,33 +88,37 @@ function _isoAt(hour) {
 //Exported simulate functions 
 
 function simulateGreen() {
-  // Normal daytime purchase: 9 AM – 6 PM, sensible amount, recognised card
+  // Normal daytime purchase: 9 AM – 6 PM, sensible amount, recognised card.
+  // Fresh random email each time — no history = no red flags (correct behaviour).
   _post({
     transaction_ref:  _ref(),
     amount:           _pick(AMOUNTS_GREEN),
-    email:            _email(false),
+    email:            _email(),
     card_bin:         _pick(BINS_GREEN),
     transaction_date: _isoAt(_rand(9, 18)),
   });
 }
 
 function simulateAmber() {
-  // Late-evening, higher amount, less common BIN — triggers review
+  // Late-evening, above-average amount, cycles through a small fixed email pool
+  // so HIGH_VELOCITY and AMOUNT_SPIKE fire after a few clicks.
   _post({
     transaction_ref:  _ref(),
     amount:           _pick(AMOUNTS_AMBER),
-    email:            _email(false),
+    email:            _amberEmail(),
     card_bin:         _pick(BINS_AMBER),
     transaction_date: _isoAt(_rand(20, 23)),
   });
 }
 
 function simulateRed() {
-  // Very early morning (1–4 AM), very high amount, risky BIN, numbered email
+  // Very early morning (1–4 AM), very high amount, risky BIN.
+  // Cycles through a small fixed pool of known-bad emails so the fraud signals
+  // (HIGH_VELOCITY, BEHAVIOUR_MISMATCH, AMOUNT_SPIKE) accumulate with each hit.
   _post({
     transaction_ref:  _ref(),
     amount:           _pick(AMOUNTS_RED),
-    email:            _email(true),
+    email:            _badEmail(),
     card_bin:         _pick(BINS_RED),
     transaction_date: _isoAt(_rand(1, 4)),
   });
