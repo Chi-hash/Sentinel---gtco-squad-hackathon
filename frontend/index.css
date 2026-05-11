@@ -439,6 +439,12 @@ body {
   background: var(--amber);
   box-shadow: 0 0 6px var(--amber);
 }
+.tc-date {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--t2);
+  white-space: nowrap;
+}
 .fill-crimson {
   background: var(--crimson);
   box-shadow: 0 0 6px var(--crimson);
