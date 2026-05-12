@@ -11,7 +11,7 @@
 
 ## Overview
 
-Sentinel is an AI-powered fraud detection and response system built on top of Squad’s payment infrastructure. It analyzes every transaction in real time, assigns a dynamic fraud risk score using machine learning, and automatically triggers protective actions such as approval, flagging, or refunding.
+Sentinel is an AI-powered fraud detection and response system built on top of Squad’s payment infrastructure. It analyzes every transaction in real time, assigns a dynamic fraud risk score using machine learning, and automatically triggers protective actions such as approval, flagging, or refunding. 
 
 It acts as an intelligent security layer between Squad webhooks and merchant fulfillment systems.
 
