@@ -251,7 +251,10 @@ function sigClass(code) {
 }
 //FEED
 function renderFeed() {
-  document.getElementById("txn-body").innerHTML = S.transactions
+  const sorted = S.transactions
+    .slice()
+    .sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+  document.getElementById("txn-body").innerHTML = sorted
     .slice(0, 50)
     .map((t) => buildRow(t, false))
     .join("");
