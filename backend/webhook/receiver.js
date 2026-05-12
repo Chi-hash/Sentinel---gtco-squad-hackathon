@@ -125,6 +125,7 @@ async function receiveWebhook(req, res, db, io) {
       reasons,
       features,
       timestamp: transaction_date,
+      source:   isDemo ? 'demo' : 'real',
     });
 
     // ── Step 8: Acknowledge ───────────────────────────────────────────────────

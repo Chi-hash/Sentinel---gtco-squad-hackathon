@@ -464,6 +464,8 @@ function _autoAddDispute(t) {
 
 function pushTransaction(t) {
   if (S.transactions.some((x) => x.ref === t.ref)) return;
+  // In verified mode, ignore incoming demo transactions
+  if (!S.demoMode && t.source === 'demo') return;
 
   if (!t.time) t.time = fmtTime(t.timestamp);
   if (!t.status)
