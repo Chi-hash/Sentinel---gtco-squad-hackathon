@@ -1245,6 +1245,11 @@ function toggleSettings() {
           <button class="sm-cancel" onclick="toggleSettings()">CANCEL</button>
           <button class="sm-save" onclick="saveSettings()">SAVE CHANGES</button>
         </div>
+        <div style="border-top:1px solid var(--line);margin-top:16px;padding-top:16px;">
+          <button onclick="toggleSettings();resetMerchantSetup()" style="width:100%;padding:10px;background:transparent;border:1px solid var(--crimson);border-radius:var(--r);color:var(--crimson);font-family:var(--ff-mono);font-size:11px;letter-spacing:.08em;cursor:pointer;transition:background .2s" onmouseover="this.style.background='rgba(220,38,38,.1)'" onmouseout="this.style.background='transparent'">
+            ⏏ DISCONNECT ACCOUNT
+          </button>
+        </div>
       </div>
     </div>`;
 }
