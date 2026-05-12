@@ -512,7 +512,6 @@ body {
 .sim-btn:hover {
   opacity: 0.7;
 }
-/* Force tag cloud always visible */
 .tag-cloud {
   display: flex !important;
   flex-wrap: wrap;
@@ -525,7 +524,6 @@ body {
   pointer-events: auto !important;
 }
 
-/* Override any parent :hover/:focus hiding */
 .page-container .tag-cloud,
 .page-container:hover .tag-cloud,
 .page-container:focus-within .tag-cloud,
@@ -587,7 +585,6 @@ body {
   background: rgba(0, 212, 180, 0.15);
 }
 
-/* Color variants */
 .tag-crimson {
   border-color: rgba(255, 71, 87, 0.3);
 }
@@ -687,7 +684,7 @@ body {
     transform: translateY(0);
   }
 }
-/* ── MAIN CONTENT ── */
+/*MAIN CONTENT*/
 .content {
   flex: 1;
   min-width: 0;
@@ -773,7 +770,7 @@ body {
   color: rgba(200, 220, 210, 0.2);
 }
 
-/* ─── Tag Cloud ─── */
+/*Tag Cloud*/
 .tag-cloud {
   display: flex;
   flex-wrap: wrap;
@@ -834,7 +831,6 @@ body {
   background: rgba(0, 212, 180, 0.15);
 }
 
-/* Color variants */
 .tag-crimson {
   border-color: rgba(255, 71, 87, 0.3);
 }
@@ -886,7 +882,7 @@ body {
   background: rgba(46, 213, 115, 0.15);
 }
 
-/* ─── Active Filter Pill ─── */
+/*Active Filter Pill*/
 .active-filters {
   display: flex;
   align-items: center;
