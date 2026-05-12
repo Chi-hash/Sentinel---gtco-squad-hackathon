@@ -1,8 +1,6 @@
 // Sentinel — frontend simulator
-// Randomised realistic transaction pools. Each call picks from pools so
-// every simulated event looks different in the dashboard.
+// Randomised realistic transaction pools.
 
-// Timestamp + counter so refs are always unique across page reloads and sessions.
 const _epoch = Date.now();
 let _simCount = 0;
 function _ref() { return 'SIM-' + _epoch + '-' + (++_simCount); }
@@ -52,8 +50,6 @@ function _email() {
   return _pick(FIRST) + '.' + _pick(LAST) + '@' + _pick(DOMAINS);
 }
 
-// Small fixed pools for RED/AMBER so the same emails repeat across simulations.
-// This builds up transaction history so velocity and spike rules fire after a few hits.
 const BAD_EMAILS = [
   'emeka.obi74@gmail.com',   'chisom.eze91@yahoo.com',
   'damilola.aliyu38@live.com', 'obinna.usman55@outlook.com',
@@ -68,60 +64,51 @@ let _amberIdx = 0;
 function _badEmail()   { return BAD_EMAILS[_badIdx++   % BAD_EMAILS.length];   }
 function _amberEmail() { return AMBER_EMAILS[_amberIdx++ % AMBER_EMAILS.length]; }
 
-// Card BINs — real Nigerian-issued BINs from the BIN database
-// GREEN  → legitimate Nigerian debit/credit cards from major banks
-//          small mix of foreign (Nigerians abroad, PayPal/foreign cards are legit)
-// AMBER  → Nigerian credit or lesser-known BINs worth reviewing
-// RED    → foreign BINs used in card-fraud patterns on Nigerian merchants
 const BINS_GREEN = [
-  '420320', // GTBank Visa Debit
-  '407127', // Zenith Visa Debit
-  '407591', // UBA Visa Debit
-  '418742', // Access Visa Debit
-  '514585', // Zenith Mastercard Debit
-  '518304', // Zenith Mastercard Debit
-  '519899', // Zenith Mastercard Debit
-  '521958', // Zenith Mastercard Debit
-  '519904', // Zenith Mastercard Debit
-  '404905', // UBA Visa Credit
-  '412053', // Zenith Visa Debit
-  '413103', // Zenith Visa Debit
-  '419760', // Zenith Visa Debit
-  '419762', // Zenith Visa Debit
-  '403660', // Access Bank Visa
-  '420319', // GTBank Visa Credit
+  '420320', 
+  '407127', 
+  '407591', 
+  '418742', 
+  '514585', 
+  '518304',
+  '519899', 
+  '521958', 
+  '519904',
+  '404905', 
+  '412053', 
+  '413103', 
+  '419760', 
+  '419762', 
+  '403660',
+  '420319', 
 ];
 const BINS_AMBER = [
-  '512269', // Ecobank Mastercard Credit
-  '512450', // Ecobank Mastercard Credit
-  '513469', // Zenith Mastercard Credit
-  '515803', // Zenith Mastercard Credit
-  '521623', // Intercontinental Mastercard Credit
-  '521982', // Zenith Mastercard Credit
-  '400066', // Intercontinental Visa Credit
-  '408378', // Zenith Visa Credit
-  '408407', // Zenith Visa Credit
-  '419225', // Skye Bank Visa Credit
-  '420358', // UBA Visa Credit
-  '512336', // Zenith Mastercard Credit
+  '512269', 
+  '512450', 
+  '513469', 
+  '515803',
+  '521623', 
+  '521982', 
+  '400066', 
+  '408378', 
+  '408407', 
+  '419225', 
+  '420358', 
+  '512336', 
 ];
 const BINS_RED = [
-  '411111', // JPMorgan Chase (US) — common in card testing
-  '400000', // Generic Visa (US) — used in BIN attacks
-  '438857', // Chase Bank USA
-  '462203', // Generic US Visa
-  '476148', // Yamagin Credit Japan
-  '403245', // Banco Citicard Brazil
-  '400115', // Barclays UK
-  '545501', // NatWest UK Mastercard
-  '490116', // Generic Visa
-  '492950', // Generic Visa
+  '411111', 
+  '400000',
+  '438857', 
+  '462203', 
+  '476148', 
+  '403245', 
+  '400115',
+  '545501', 
+  '490116',
+  '492950', 
 ];
 
-// Amounts (in kobo — 1 NGN = 100 kobo)
-// GREEN:  ₦1,200 – ₦45,000  (everyday POS / e-commerce)
-// AMBER:  ₦55,000 – ₦150,000 (above-average, warrants review)
-// RED:    ₦200,000 – ₦500,000 (very high, typical card fraud amount)
 const AMOUNTS_GREEN = [
   120000, 250000, 350000, 500000, 750000, 1000000,
   1250000, 1500000, 2000000, 2500000, 3000000, 3500000, 4000000, 4500000,
