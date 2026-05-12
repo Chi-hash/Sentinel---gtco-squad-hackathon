@@ -113,7 +113,12 @@ function hydrateFromDB() {
         renderFeed();
         syncKPIs();
         updateNotifBadge();
-
+        // Show the most recent transaction's time in the header
+        const newest = S.transactions.find(t => t.time || t.timestamp);
+        if (newest) {
+          document.getElementById("last-time").textContent =
+            newest.time || fmtTime(newest.timestamp);
+        }
       }
     })
     .catch(() => {});
