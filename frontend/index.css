@@ -524,7 +524,139 @@ body {
 .sim-btn:hover {
   opacity: 0.7;
 }
+/* Force tag cloud always visible */
+.tag-cloud {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  min-height: 28px;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
 
+/* Override any parent :hover/:focus hiding */
+.page-container .tag-cloud,
+.page-container:hover .tag-cloud,
+.page-container:focus-within .tag-cloud,
+.page-container:focus .tag-cloud {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.tag-cloud-label {
+  font-size: 11px;
+  color: var(--t3);
+  font-family: var(--ff-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 4px;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--t2);
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 0.3px;
+}
+
+.tag-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.tag-chip.active {
+  border-color: var(--teal);
+  background: rgba(0, 212, 180, 0.1);
+  color: var(--teal);
+}
+
+.tag-count {
+  font-size: 10px;
+  color: var(--t3);
+  background: var(--bg);
+  padding: 1px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.tag-chip.active .tag-count {
+  color: var(--teal);
+  background: rgba(0, 212, 180, 0.15);
+}
+
+/* Color variants */
+.tag-crimson { border-color: rgba(255, 71, 87, 0.3); }
+.tag-crimson:hover { border-color: var(--crimson); color: var(--crimson); }
+.tag-crimson.active { background: rgba(255, 71, 87, 0.1); color: var(--crimson); border-color: var(--crimson); }
+.tag-crimson.active .tag-count { color: var(--crimson); background: rgba(255, 71, 87, 0.15); }
+
+.tag-amber { border-color: rgba(240, 165, 0, 0.3); }
+.tag-amber:hover { border-color: var(--amber); color: var(--amber); }
+.tag-amber.active { background: rgba(240, 165, 0, 0.1); color: var(--amber); border-color: var(--amber); }
+.tag-amber.active .tag-count { color: var(--amber); background: rgba(240, 165, 0, 0.15); }
+
+.tag-jade { border-color: rgba(46, 213, 115, 0.3); }
+.tag-jade:hover { border-color: var(--jade); color: var(--jade); }
+.tag-jade.active { background: rgba(46, 213, 115, 0.1); color: var(--jade); border-color: var(--jade); }
+.tag-jade.active .tag-count { color: var(--jade); background: rgba(46, 213, 115, 0.15); }
+
+.active-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  animation: slideDown 0.2s ease;
+}
+
+.af-label {
+  font-size: 11px;
+  color: var(--t3);
+  font-family: var(--ff-mono);
+}
+
+.af-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(0, 212, 180, 0.1);
+  border: 1px solid var(--teal);
+  color: var(--teal);
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.af-pill:hover {
+  background: rgba(0, 212, 180, 0.2);
+}
+
+.af-x {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 /* ── MAIN CONTENT ── */
 .content {
   flex: 1;
@@ -757,22 +889,6 @@ body {
 
 .af-pill:hover {
   background: rgba(0, 212, 180, 0.2);
-}
-
-.af-x {
-  font-size: 10px;
-  opacity: 0.7;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .page-container {
