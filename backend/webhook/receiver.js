@@ -99,6 +99,7 @@ async function receiveWebhook(req, res, db, io) {
       features,
       timestamp:   transaction_date,
       action_taken,
+      source:      isDemo ? 'demo' : 'real',
     });
 
     // ── Step 6: Act (fire and forget) ─────────────────────────────────────────
@@ -124,6 +125,7 @@ async function receiveWebhook(req, res, db, io) {
       reasons,
       features,
       timestamp: transaction_date,
+      source:   isDemo ? 'demo' : 'real',
     });
 
     // ── Step 8: Acknowledge ───────────────────────────────────────────────────

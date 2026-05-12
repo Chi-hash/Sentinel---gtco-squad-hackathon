@@ -52,12 +52,26 @@ function _initDashboard() {
   updateNotifBadge();
   buildChart();
   initSocket();
-  startDemo();
+
+  // Only auto-start demo simulation if this is a demo session.
+  // Verified Squad merchants use real webhook data — hide the demo ribbon.
+  const stored = localStorage.getItem(STORAGE_KEY);
+  const merchantInfo = stored ? (() => { try { return JSON.parse(stored); } catch { return null; } })() : null;
+  const isDemo = !merchantInfo || merchantInfo.environment === 'demo';
+
+  S.demoMode = isDemo;
+  const ribbon = document.getElementById('demo-ribbon');
+  if (ribbon) ribbon.style.display = isDemo ? 'flex' : 'none';
+  const simPanel = document.querySelector('.sim-panel');
+  if (simPanel) simPanel.style.display = isDemo ? '' : 'none';
+  if (isDemo) startDemo();
+
   hydrateFromDB();
 }
 
 function hydrateFromDB() {
-  fetch("/api/transactions")
+  const url = S.demoMode ? "/api/transactions" : "/api/transactions?source=real";
+  fetch(url)
     .then((r) => r.json())
     .then((rows) => {
       if (!Array.isArray(rows)) return;
@@ -100,7 +114,12 @@ function hydrateFromDB() {
         renderFeed();
         syncKPIs();
         updateNotifBadge();
-
+        // Show the most recent transaction's time in the header
+        const newest = S.transactions.find(t => t.time || t.timestamp);
+        if (newest) {
+          document.getElementById("last-time").textContent =
+            newest.time || fmtTime(newest.timestamp);
+        }
       }
     })
     .catch(() => {});
@@ -237,6 +256,11 @@ function sigClass(code) {
     "FIRST_TIME_PAYER",
     "BIN_PATTERN",
     "NEW_DEVICE",
+    "FOREIGN_CARD",
+    "PREPAID_CARD",
+    "BEHAVIOUR_MISMATCH",
+    "HIGH_VALUE_NEW",
+    "STAT_ANOMALY",
   ];
   if (critical.includes(code)) return "sig-c";
   if (warning.includes(code)) return "sig-w";
@@ -443,6 +467,8 @@ function _autoAddDispute(t) {
 
 function pushTransaction(t) {
   if (S.transactions.some((x) => x.ref === t.ref)) return;
+  // In verified mode, ignore incoming demo transactions
+  if (!S.demoMode && t.source === 'demo') return;
 
   if (!t.time) t.time = fmtTime(t.timestamp);
   if (!t.status)
@@ -618,13 +644,6 @@ function openModal(ref) {
               </div>
             </div></div>
             <div><div class="m-sec-lbl">Risk Signals</div>${reasons}</div>
-          ${t.tier === "RED" ? `
-          <div><div class="m-sec-lbl">Fraudster Profile</div>
-            <div style="background:var(--bg3);border:1px solid var(--line);border-radius:var(--r);padding:12px;">
-              <div><span style="color:var(--crimson);display:inline-block;width:72px">Origin:</span><span style="color:var(--t2)">${!t.bin_info ? 'Unknown BIN — not in database' : t.bin_info.is_nigerian ? `Nigerian card · ${t.bin_info.bank || t.bin_info.brand}` : `Foreign card · ${t.bin_info.country} · ${t.bin_info.bank || t.bin_info.brand}`}</span></div>
-              <div style="border-top:1px solid #1e293b;margin-top:10px;padding-top:10px;"><span style="color:var(--crimson);display:inline-block;width:72px">Risk:</span><span style="color:var(--t2)">${t.tier} — ${t.score}/100 · ${(t.codes || []).length} signal(s) triggered</span></div>
-            </div>
-          </div>` : ""}
           ${feats ? `<div><div class="m-sec-lbl">Feature Deviations</div>${feats}</div>` : ""}
           ${t.tier === 'RED' ? `<div><div class="m-sec-lbl">Fraudster Profile</div><div style="background:#0b0b0b;border-left:3px solid var(--crimson);border-radius:4px;padding:14px 16px;font-family:var(--ff-mono);font-size:11px;line-height:2;">
             <div style="color:var(--crimson);letter-spacing:.08em;margin-bottom:8px">■ FRAUDSTER PROFILE</div>
@@ -668,6 +687,12 @@ function generateReport(ref) {
     BEHAVIOUR_MISMATCH:
       "Sudden jump from small habitual amounts to a large payment",
     HIGH_VALUE_NEW: "First-time customer with an unusually high payment amount",
+    FOREIGN_CARD: "Card BIN identified as issued outside Nigeria",
+    PREPAID_CARD: "Prepaid card — elevated chargeback risk in Nigerian e-commerce",
+    UNKNOWN_BIN: "Card BIN not found in issuer database — origin unverifiable",
+    STAT_ANOMALY: "Amount is more than 2 standard deviations above customer average",
+    ML_HIGH_RISK: "Isolation Forest ML model: high fraud probability",
+    ML_MEDIUM_RISK: "Isolation Forest ML model: elevated fraud risk",
   };
 
   const reasonsHtml = (t.codes || []).length
@@ -818,7 +843,7 @@ th { background: #f1f5f9; padding: 8px 12px; text-align: left; font-size: 10px; 
       <div>
         <div class="score-tier">${t.tier} — ${t.score}/100</div>
         <div class="score-desc">${t.tier === "GREEN" ? "Low risk — safe to process and fulfil." : t.tier === "AMBER" ? "Medium risk — manual review recommended before fulfilment." : "High risk — automatically blocked by Sentinel."}</div>
-        <div style="margin-top:8px;font-size:11px;color:#94a3b8">Engine: ${t.model_trained !== false ? "Rule Engine (R01–R08) + Z-Score + Isolation Forest ML" : "Rule Engine (R01–R08) + Z-Score"}</div>
+        <div style="margin-top:8px;font-size:11px;color:#94a3b8">Engine: ${t.model_trained !== false ? "Rule Engine (R01–R10) + Z-Score + Isolation Forest ML" : "Rule Engine (R01–R10) + Z-Score"}</div>
       </div>
     </div>
   </div>
@@ -828,7 +853,7 @@ th { background: #f1f5f9; padding: 8px 12px; text-align: left; font-size: 10px; 
     <div class="sec-title">Timeline</div>
     <div class="timeline">
       <div class="tl-row"><span class="tl-time">${timeStr}</span><span class="tl-text">Transaction received — ${fmtMoney(t.amount)} from ${t.email}</span></div>
-      <div class="tl-row"><span class="tl-time">${timeStr}</span><span class="tl-text">Sentinel risk analysis initiated (Rules R01–R08, Z-Score, ML)</span></div>
+      <div class="tl-row"><span class="tl-time">${timeStr}</span><span class="tl-text">Sentinel risk analysis initiated (Rules R01–R10, Z-Score, ML)</span></div>
       <div class="tl-row"><span class="tl-time">${timeStr}</span><span class="tl-text">${(t.codes || []).length} risk signal(s) detected — score ${t.score}/100</span></div>
       <div class="tl-row"><span class="tl-time">${timeStr}</span><span class="tl-text">Decision: <strong style="color:${col}">${(t.status || t.tier).toUpperCase()}</strong></span></div>
       <div class="tl-row"><span class="tl-time">${now.toLocaleTimeString("en-GB")}</span><span class="tl-text">Report generated</span></div>

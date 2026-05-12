@@ -1,7 +1,13 @@
 require('dotenv').config();
 const axios = require('axios');
 
-const BASE_URL = 'https://sandbox-api-d.squadco.com';
+// Dynamically select sandbox vs live base URL based on the configured API key.
+function getBaseUrl() {
+  const key = String(process.env.SQUAD_API_KEY || '');
+  return key.startsWith('sandbox_')
+    ? 'https://sandbox-api-d.squadco.com'
+    : 'https://api-d.squadco.com';
+}
 
 function authHeaders() {
   return { Authorization: `Bearer ${process.env.SQUAD_API_KEY}` };
@@ -11,7 +17,7 @@ function authHeaders() {
 async function verifyTransaction(transactionRef) {
   try {
     const { data } = await axios.get(
-      `${BASE_URL}/transaction/verify/${transactionRef}`,
+      `${getBaseUrl()}/transaction/verify/${transactionRef}`,
       { headers: authHeaders() }
     );
     return data;
@@ -25,7 +31,7 @@ async function verifyTransaction(transactionRef) {
 async function refundTransaction(transactionRef, amount) {
   try {
     const { data } = await axios.post(
-      `${BASE_URL}/transaction/refund`,
+      `${getBaseUrl()}/transaction/refund`,
       { transaction_ref: transactionRef, refund_type: 'full', amount },
       { headers: authHeaders() }
     );
@@ -40,7 +46,7 @@ async function refundTransaction(transactionRef, amount) {
 async function getDisputes() {
   try {
     const { data } = await axios.get(
-      `${BASE_URL}/dispute`,
+      `${getBaseUrl()}/dispute`,
       { headers: authHeaders() }
     );
     return data;
@@ -54,7 +60,7 @@ async function getDisputes() {
 async function challengeDispute(transactionRef) {
   try {
     const { data } = await axios.post(
-      `${BASE_URL}/dispute/merchant/challenge`,
+      `${getBaseUrl()}/dispute/merchant/challenge`,
       { transaction_ref: transactionRef },
       { headers: authHeaders() }
     );

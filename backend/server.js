@@ -40,7 +40,11 @@ app.use(express.json());
 
 app.get('/api/transactions', async (req, res) => {
   try {
-    const transactions = await db.getAllTransactions();
+    // ?source=real  → verified merchants (real transactions only)
+    // ?source=demo  → demo transactions only
+    // (no param)    → all transactions
+    const { source } = req.query;
+    const transactions = await db.getAllTransactions(source || null);
     res.json(transactions);
   } catch (err) {
     console.error('[API] /api/transactions error:', err.message);

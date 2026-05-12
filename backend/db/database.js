@@ -21,9 +21,10 @@ function initDB() {
       action_taken TEXT
     )
   `);
-  // Migrate: add features column if this is an existing database without it
+  // Migrations for columns added after initial schema
   try { db.exec('ALTER TABLE transactions ADD COLUMN features TEXT'); } catch (_) {}
   try { db.exec('ALTER TABLE transactions ADD COLUMN bin_info TEXT'); } catch (_) {}
+  try { db.exec('ALTER TABLE transactions ADD COLUMN source TEXT DEFAULT "real"'); } catch (_) {}
   console.log('Database ready.');
 }
 
@@ -31,15 +32,16 @@ function initDB() {
 function saveTransaction(txn) {
   const stmt = db.prepare(`
     INSERT OR IGNORE INTO transactions
-      (ref, email, amount, card_bin, bin_info, score, tier, reasons, features, timestamp, action_taken)
+      (ref, email, amount, card_bin, bin_info, score, tier, reasons, features, timestamp, action_taken, source)
     VALUES
-      (@ref, @email, @amount, @card_bin, @bin_info, @score, @tier, @reasons, @features, @timestamp, @action_taken)
+      (@ref, @email, @amount, @card_bin, @bin_info, @score, @tier, @reasons, @features, @timestamp, @action_taken, @source)
   `);
   stmt.run({
     ...txn,
     bin_info: JSON.stringify(txn.bin_info || null),
     reasons:  JSON.stringify(txn.reasons  || []),
     features: JSON.stringify(txn.features || {}),
+    source:   txn.source || 'real',
   });
 }
 
@@ -74,9 +76,13 @@ function getUserHistory(email) {
   ).all(email);
 }
 
-function getAllTransactions() {
-  return db.prepare('SELECT * FROM transactions ORDER BY id DESC LIMIT 100')
-    .all()
+function getAllTransactions(source) {
+  const query = source
+    ? 'SELECT * FROM transactions WHERE source = ? ORDER BY id DESC LIMIT 100'
+    : 'SELECT * FROM transactions ORDER BY id DESC LIMIT 100';
+  const params = source ? [source] : [];
+  return db.prepare(query)
+    .all(...params)
     .map(r => ({
       ...r,
       bin_info: JSON.parse(r.bin_info || 'null'),
