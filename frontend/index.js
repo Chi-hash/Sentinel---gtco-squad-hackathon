@@ -88,12 +88,9 @@ function hydrateFromDB() {
           reasons: r.reasons || [],
           features: r.features || {},
           status:
-            r.action_taken ||
-            (r.tier === "GREEN"
-              ? "approved"
-              : r.tier === "AMBER"
-                ? "flagged"
-                : "blocked"),
+            r.action_taken === "refunded" ? "blocked"
+            : r.action_taken ||
+              (r.tier === "GREEN" ? "approved" : r.tier === "AMBER" ? "flagged" : "blocked"),
           time: fmtTime(r.timestamp),
           timestamp: r.timestamp,
           model_trained: true,
@@ -114,6 +111,7 @@ function hydrateFromDB() {
         renderFeed();
         syncKPIs();
         updateNotifBadge();
+        buildTagCloud();
         // Show the most recent transaction's time in the header
         const newest = S.transactions.find(t => t.time || t.timestamp);
         if (newest) {
@@ -291,28 +289,32 @@ function applyFilter(q) {
   let visible = 0;
 
   rows.forEach((row) => {
-    const emailCell = row.querySelector(".tc-email");
-    const signalsCell = row.querySelector("td:nth-child(7)");
-    const tierCell = row.querySelector("td:nth-child(6) .pill");
+    // Column layout: 1=Date 2=Time 3=Amount 4=Customer 5=Card 6=AIScore 7=Tier 8=Signals 9=Status 10=Action
+    const emailCell   = row.querySelector(".tc-email");
+    const cardCell    = row.querySelector(".tc-card");
+    const amtCell     = row.querySelector(".tc-amt");
+    const tierCell    = row.querySelector("td:nth-child(7) .pill");
+    const signalsCell = row.querySelector("td:nth-child(8)");
+    const statusCell  = row.querySelector("td:nth-child(9)");
 
-    // Email match
-    const emailMatch = emailCell && emailCell.textContent.toLowerCase().includes(q);
-
-    // Signal match
-    let signalMatch = false;
-    if (signalsCell) {
-      const signalSpans = signalsCell.querySelectorAll(".sig");
-      signalMatch = Array.from(signalSpans).some(s => 
-        s.textContent.toLowerCase().includes(q)
-      );
-    }
-
-    // Tier/status match
-    const tierMatch = tierCell && tierCell.textContent.toLowerCase().includes(q);
-    const statusCell = row.querySelector("td:nth-child(8)");
+    const emailMatch  = emailCell  && emailCell.textContent.toLowerCase().includes(q);
+    const cardMatch   = cardCell   && cardCell.textContent.toLowerCase().includes(q);
+    const amtMatch    = amtCell    && amtCell.textContent.toLowerCase().includes(q);
+    const tierMatch   = tierCell   && tierCell.textContent.toLowerCase().includes(q);
     const statusMatch = statusCell && statusCell.textContent.toLowerCase().includes(q);
 
-    const match = !q || emailMatch || signalMatch || tierMatch || statusMatch;
+    let signalMatch = false;
+    if (signalsCell) {
+      signalMatch = Array.from(signalsCell.querySelectorAll(".sig"))
+        .some(s => s.textContent.toLowerCase().includes(q));
+    }
+
+    // Tag filter — independent of search text, matches status cell
+    const tagMatch = !_activeTag || (statusCell && statusCell.textContent.toLowerCase().includes(_activeTag));
+    // Text filter — applies within the tag-filtered set
+    const textMatch = !q || emailMatch || cardMatch || amtMatch || tierMatch || signalMatch || statusMatch;
+
+    const match = tagMatch && textMatch;
     row.style.display = match ? "" : "none";
     if (match) visible++;
   });
@@ -320,15 +322,9 @@ function applyFilter(q) {
   const meta = document.getElementById("feed-meta");
   if (meta) meta.textContent = `${visible} transaction${visible !== 1 ? "s" : ""}`;
 
-  // Update active filter pill
+  // Keep the active-filters pill hidden — tag buttons show their own active state
   const afContainer = document.getElementById("active-filters");
-  const afText = document.getElementById("af-text");
-  if (q && afContainer && afText) {
-    afText.textContent = q;
-    afContainer.style.display = "flex";
-  } else if (afContainer) {
-    afContainer.style.display = "none";
-  }
+  if (afContainer) afContainer.style.display = "none";
 }
 
 function clearEmailSearch() {
@@ -340,48 +336,49 @@ function clearEmailSearch() {
 }
 
 function clearActiveFilter() {
+  _activeTag = null;
+  document.querySelectorAll(".tag-chip").forEach(c => c.classList.remove("active"));
   clearEmailSearch();
-  document.querySelectorAll(".tag-chip").forEach(t => t.classList.remove("active"));
 }
 
 const POPULAR_TAGS = [
-  { label: "approved", color: "jade" },
-  { label: "flagged", color: "amber" },
-  { label: "blocked", color: "crimson" },
+  { label: "approved", color: "jade"    },
+  { label: "flagged",  color: "amber"   },
+  { label: "blocked",  color: "crimson" },
 ];
+
+let _activeTag = null;
 
 function buildTagCloud() {
   const container = document.getElementById("tag-cloud");
   if (!container) return;
 
   const counts = { approved: 0, flagged: 0, blocked: 0 };
-
   S.transactions.forEach(t => {
-    if (counts[t.status] !== undefined) counts[t.status]++;
+    if (t.status && counts[t.status] !== undefined) counts[t.status]++;
   });
 
   const tagsHtml = POPULAR_TAGS.map(tag => {
     const count = counts[tag.label] || 0;
     if (count === 0) return "";
-    return `<button class="tag-chip tag-${tag.color}" data-tag="${tag.label}" onclick="clickTag('${tag.label}', this)">${tag.label} <span class="tag-count">${count}</span></button>`;
+    const isActive = _activeTag === tag.label;
+    return `<button class="tag-chip tag-${tag.color}${isActive ? ' active' : ''}" data-tag="${tag.label}" onclick="clickTag('${tag.label}', this)">${tag.label} <span class="tag-count">${count}</span></button>`;
   }).join("");
 
-  container.innerHTML = `<span class="tag-cloud-label">Quick filters:</span>${tagsHtml}`;
+  container.innerHTML = `<span class="tag-cloud-label">Quick filters:</span>${tagsHtml || '<span style="color:var(--t3);font-size:11px">No transactions yet</span>'}`;
 }
 
 function clickTag(tag, btn) {
-  const input = document.getElementById("email-search");
-  if (!input) return;
-
   if (btn.classList.contains("active")) {
-    clearActiveFilter();
-    return;
+    _activeTag = null;
+    document.querySelectorAll(".tag-chip").forEach(c => c.classList.remove("active"));
+  } else {
+    _activeTag = tag.toLowerCase();
+    document.querySelectorAll(".tag-chip").forEach(c => c.classList.remove("active"));
+    btn.classList.add("active");
   }
-
-  document.querySelectorAll(".tag-chip").forEach(t => t.classList.remove("active"));
-  btn.classList.add("active");
-  input.value = tag.toLowerCase();
-  filterFeed();
+  const q = document.getElementById("email-search")?.value.trim().toLowerCase() || "";
+  applyFilter(q);
 }
 
 function refreshTagCloud() {
@@ -504,8 +501,12 @@ function pushTransaction(t) {
   const tbody = document.getElementById("txn-body");
   const tmp = document.createElement("tbody");
   tmp.innerHTML = buildRow(t, true);
-  tbody.insertBefore(tmp.firstChild, tbody.firstChild);
+  const newRow = tmp.firstChild;
+  tbody.insertBefore(newRow, tbody.firstChild);
   if (tbody.rows.length > 50) tbody.deleteRow(tbody.rows.length - 1);
+  // If a filter is active, apply it to the new row immediately
+  const activeQ = document.getElementById("email-search")?.value.trim().toLowerCase() || "";
+  if (activeQ) applyFilter(activeQ);
   document.getElementById("feed-meta").textContent =
     `${Math.min(S.transactions.length, 50)} transactions`;
 
