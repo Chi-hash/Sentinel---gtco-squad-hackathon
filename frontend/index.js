@@ -511,11 +511,7 @@ function pushTransaction(t) {
   document.getElementById("last-time").textContent =
     t.time || fmtTime(t.timestamp);
 
-  const tbody = document.getElementById("txn-body");
-  const tmp = document.createElement("tbody");
-  tmp.innerHTML = buildRow(t, true);
-  tbody.insertBefore(tmp.firstChild, tbody.firstChild);
-  if (tbody.rows.length > 50) tbody.deleteRow(tbody.rows.length - 1);
+  renderFeed();
   document.getElementById("feed-meta").textContent =
     `${Math.min(S.transactions.length, 50)} transactions`;
 
