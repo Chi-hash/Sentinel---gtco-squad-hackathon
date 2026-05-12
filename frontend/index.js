@@ -264,6 +264,16 @@ function sigClass(code) {
   if (warning.includes(code)) return "sig-w";
   return "sig-i";
 }
+
+function emailToName(email) {
+  if (!email) return "Unknown";
+  const local = email.split("@")[0];
+  return local
+    .replace(/[._0-9]/g, " ")
+    .replace(/\b\w/g, c => c.toUpperCase())
+    .replace(/\s+/g, " ")
+    .trim();
+}
 //FEED
 function renderFeed() {
   document.getElementById("txn-body").innerHTML = S.transactions
@@ -296,8 +306,10 @@ function applyFilter(q) {
     const tierCell    = row.querySelector("td:nth-child(7) .pill");
     const signalsCell = row.querySelector("td:nth-child(8)");
     const statusCell  = row.querySelector("td:nth-child(9)");
-
-    const emailMatch  = emailCell  && emailCell.textContent.toLowerCase().includes(q);
+    const emailMatch = emailCell && (
+      emailCell.textContent.toLowerCase().includes(q) ||
+      (emailCell.dataset.email && emailCell.dataset.email.toLowerCase().includes(q))
+    );
     const cardMatch   = cardCell   && cardCell.textContent.toLowerCase().includes(q);
     const amtMatch    = amtCell    && amtCell.textContent.toLowerCase().includes(q);
     const tierMatch   = tierCell   && tierCell.textContent.toLowerCase().includes(q);
@@ -414,7 +426,7 @@ function buildRow(t, anim) {
     <td class="tc-date">${fmtDate(t.timestamp)}</td> 
     <td class="tc-time">${t.time || fmtTime(t.timestamp)}</td>
     <td class="tc-amt">${money(t.amount)}</td>
-    <td class="tc-email">${t.email}</td>
+    <td class="tc-email" data-email="${t.email}" title="Email: ${t.email}">${emailToName(t.email)}</td>
     <td class="tc-card" style="font-size:11px;color:var(--t2)">${t.bin_info?.bank ? t.bin_info.bank.split(' ')[0] : (t.card_bin || '—')}</td>
     <td>
       <div class="sc-block">
