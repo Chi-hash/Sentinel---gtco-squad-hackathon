@@ -819,7 +819,7 @@ th { background: #f1f5f9; padding: 8px 12px; text-align: left; font-size: 10px; 
       <div>
         <div class="score-tier">${t.tier} — ${t.score}/100</div>
         <div class="score-desc">${t.tier === "GREEN" ? "Low risk — safe to process and fulfil." : t.tier === "AMBER" ? "Medium risk — manual review recommended before fulfilment." : "High risk — automatically blocked by Sentinel."}</div>
-        <div style="margin-top:8px;font-size:11px;color:#94a3b8">Engine: ${t.model_trained !== false ? "Rule Engine (R01–R08) + Z-Score + Isolation Forest ML" : "Rule Engine (R01–R08) + Z-Score"}</div>
+        <div style="margin-top:8px;font-size:11px;color:#94a3b8">Engine: ${t.model_trained !== false ? "Rule Engine (R01–R10) + Z-Score + Isolation Forest ML" : "Rule Engine (R01–R10) + Z-Score"}</div>
       </div>
     </div>
   </div>
@@ -829,7 +829,7 @@ th { background: #f1f5f9; padding: 8px 12px; text-align: left; font-size: 10px; 
     <div class="sec-title">Timeline</div>
     <div class="timeline">
       <div class="tl-row"><span class="tl-time">${timeStr}</span><span class="tl-text">Transaction received — ${fmtMoney(t.amount)} from ${t.email}</span></div>
-      <div class="tl-row"><span class="tl-time">${timeStr}</span><span class="tl-text">Sentinel risk analysis initiated (Rules R01–R08, Z-Score, ML)</span></div>
+      <div class="tl-row"><span class="tl-time">${timeStr}</span><span class="tl-text">Sentinel risk analysis initiated (Rules R01–R10, Z-Score, ML)</span></div>
       <div class="tl-row"><span class="tl-time">${timeStr}</span><span class="tl-text">${(t.codes || []).length} risk signal(s) detected — score ${t.score}/100</span></div>
       <div class="tl-row"><span class="tl-time">${timeStr}</span><span class="tl-text">Decision: <strong style="color:${col}">${(t.status || t.tier).toUpperCase()}</strong></span></div>
       <div class="tl-row"><span class="tl-time">${now.toLocaleTimeString("en-GB")}</span><span class="tl-text">Report generated</span></div>
