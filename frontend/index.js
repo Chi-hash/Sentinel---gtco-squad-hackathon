@@ -70,7 +70,8 @@ function _initDashboard() {
 }
 
 function hydrateFromDB() {
-  fetch("/api/transactions")
+  const url = S.demoMode ? "/api/transactions" : "/api/transactions?source=real";
+  fetch(url)
     .then((r) => r.json())
     .then((rows) => {
       if (!Array.isArray(rows)) return;
