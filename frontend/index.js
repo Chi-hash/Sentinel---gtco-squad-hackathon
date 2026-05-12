@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
   S.transactions = [...SEED];
   S.disputes = [...SEED_DSP];
   renderFeed();
-  buildTagCloud();
+  buildTagCloud(); 
   renderDisputes();
   syncKPIs();
   S.transactions.forEach((t) => {
@@ -306,47 +306,25 @@ function clearActiveFilter() {
   document.querySelectorAll(".tag-chip").forEach(t => t.classList.remove("active"));
 }
 
-//TAG CLOUD
-
 const POPULAR_TAGS = [
-  { label: "RED", type: "tier", color: "crimson" },
-  { label: "AMBER", type: "tier", color: "amber" },
-  { label: "GREEN", type: "tier", color: "jade" },
-  { label: "HIGH_VELOCITY", type: "signal", color: "crimson" },
-  { label: "AMOUNT_SPIKE", type: "signal", color: "amber" },
-  { label: "OFF_HOURS", type: "signal", color: "amber" },
-  { label: "GEO_MISMATCH", type: "signal", color: "crimson" },
-  { label: "ML_HIGH_RISK", type: "signal", color: "crimson" },
-  { label: "NEW_DEVICE", type: "signal", color: "amber" },
-  { label: "ROUND_AMOUNT", type: "signal", color: "amber" },
-  { label: "blocked", type: "status", color: "crimson" },
-  { label: "flagged", type: "status", color: "amber" },
-  { label: "approved", type: "status", color: "jade" },
+  { label: "approved", color: "jade" },
+  { label: "flagged", color: "amber" },
+  { label: "blocked", color: "crimson" },
 ];
 
 function buildTagCloud() {
   const container = document.getElementById("tag-cloud");
   if (!container) return;
-  const counts = {};
-  POPULAR_TAGS.forEach(tag => {
-    counts[tag.label] = 0;
-  });
+
+  const counts = { approved: 0, flagged: 0, blocked: 0 };
 
   S.transactions.forEach(t => {
-    // Count by tier
-    if (counts[t.tier] !== undefined) counts[t.tier]++;
-    // Count by status
     if (counts[t.status] !== undefined) counts[t.status]++;
-    // Count by signal
-    (t.codes || []).forEach(code => {
-      if (counts[code] !== undefined) counts[code]++;
-    });
   });
 
-  // Build HTML
   const tagsHtml = POPULAR_TAGS.map(tag => {
     const count = counts[tag.label] || 0;
-    if (count === 0) return ""; 
+    if (count === 0) return "";
     return `<button class="tag-chip tag-${tag.color}" data-tag="${tag.label}" onclick="clickTag('${tag.label}', this)">${tag.label} <span class="tag-count">${count}</span></button>`;
   }).join("");
 
@@ -357,19 +335,13 @@ function clickTag(tag, btn) {
   const input = document.getElementById("email-search");
   if (!input) return;
 
-  // Toggle: if already active, clear it
   if (btn.classList.contains("active")) {
     clearActiveFilter();
     return;
   }
 
-  // Clear other active tags
   document.querySelectorAll(".tag-chip").forEach(t => t.classList.remove("active"));
-
-  // Set this tag as active
   btn.classList.add("active");
-
-  // Apply filter
   input.value = tag.toLowerCase();
   filterFeed();
 }
@@ -477,7 +449,7 @@ function pushTransaction(t) {
   if (t.tier === "RED") {
     S.blocked++;
     bumpKPI("kpi-blocked-card", "kpi-blocked");
-    S.saved += Math.round(t.amount / 100); // convert kobo → naira for display
+    S.saved += Math.round(t.amount / 100);
     bumpKPI("kpi-saved-card", "kpi-saved");
     _autoAddDispute(t);
   }
