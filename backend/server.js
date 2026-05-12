@@ -4,9 +4,10 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
-const db = require('./db/database');
+const db        = require('./db/database');
 const { receiveWebhook } = require('./webhook/receiver');
-const squadApi = require('./squad-client/api');
+const squadApi  = require('./squad-client/api');
+const binLookup = require('./bin-lookup');
 
 // ── Global safety net — prevents any single unhandled error from killing the process ──
 process.on('uncaughtException',  (err) => console.error('[Sentinel] uncaughtException:', err.message));
@@ -45,6 +46,13 @@ app.get('/api/transactions', async (req, res) => {
     console.error('[API] /api/transactions error:', err.message);
     res.status(500).json({ error: 'Failed to fetch transactions' });
   }
+});
+
+// BIN lookup — used by frontend to enrich card display
+app.get('/api/bin/:bin', (req, res) => {
+  const info = binLookup.lookupBin(req.params.bin);
+  if (!info) return res.status(404).json({ error: 'BIN not found', bin: req.params.bin });
+  res.json(info);
 });
 
 app.get('/api/disputes', async (req, res) => {

@@ -96,13 +96,36 @@ function R08(transaction, db) {
   }
 }
 
+// Card issued outside Nigeria. Nigerian customers can legitimately hold foreign cards
+// (PayPal, international Visa/MC) — so this adds moderate risk rather than blocking.
+// Only fires when BIN is positively identified as non-Nigerian; unknown BINs use R10.
+function R09(transaction) {
+  try {
+    const info = transaction.bin_info;
+    if (!info) return { score: 0, reason: null };
+    if (info.country && info.country !== 'NG' && info.country !== '')
+      return { score: 20, reason: 'FOREIGN_CARD' };
+    return { score: 0, reason: null };
+  } catch {
+    return { score: 0, reason: null };
+  }
+}
+
+// Prepaid cards have a significantly higher chargeback rate in Nigerian e-commerce.
+// Also catches cards with no BIN match at all (truly unknown BINs are suspicious).
+function R10(transaction) {
+  try {
+    const info = transaction.bin_info;
+    // Unknown BIN — not in dataset at all
+    if (!info || (!info.brand && !info.country)) return { score: 10, reason: 'UNKNOWN_BIN' };
+    // Known prepaid card
+    if (info.type === 'PREPAID') return { score: 15, reason: 'PREPAID_CARD' };
+    return { score: 0, reason: null };
+  } catch {
+    return { score: 0, reason: null };
+  }
+}
+
 module.exports = {
-  R01,
-  R02,
-  R03,
-  R04,
-  R05,
-  R06,
-  R07,
-  R08,
+  R01, R02, R03, R04, R05, R06, R07, R08, R09, R10,
 };

@@ -44,6 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   updateNotifBadge();
   buildChart();
+  // Defer so the browser has painted and SVG has a real width
+  requestAnimationFrame(() => setTimeout(buildNetwork, 50));
   initSocket();
   startDemo();
   hydrateFromDB();
@@ -92,10 +94,16 @@ function hydrateFromDB() {
         renderFeed();
         syncKPIs();
         updateNotifBadge();
+        // Rebuild network now that we have real card_bin data from DB
+        requestAnimationFrame(buildNetwork);
       }
     })
     .catch(() => {});
 }
+
+window.addEventListener('resize', () => {
+  if (typeof d3 !== 'undefined') requestAnimationFrame(buildNetwork);
+});
 
 //SIDEBAR TOGGLE
 function toggleSidebar() {
@@ -475,6 +483,7 @@ function pushTransaction(t) {
     triggerNotifAlert();
   }
   refreshTagCloud();
+  addNodeToNetwork(t);
 }
 
 function formatNumber(n) {
@@ -601,6 +610,16 @@ function openModal(ref) {
             </div></div>
           <div><div class="m-sec-lbl">Risk Signals</div>${reasons}</div>
           ${feats ? `<div><div class="m-sec-lbl">Feature Deviations</div>${feats}</div>` : ""}
+          ${t.tier === 'RED' ? `<div><div class="m-sec-lbl">Fraudster Profile</div><div style="background:#0b0b0b;border-left:3px solid var(--crimson);border-radius:4px;padding:14px 16px;font-family:var(--ff-mono);font-size:11px;line-height:2;">
+            <div style="color:var(--crimson);letter-spacing:.08em;margin-bottom:8px">■ FRAUDSTER PROFILE</div>
+            <div style="border-bottom:1px solid #1e293b;margin-bottom:10px;"></div>
+            <div><span style="color:var(--crimson);display:inline-block;width:72px">Operates:</span><span style="color:var(--t2)">${(t.codes||[]).includes('OFF_HOURS') ? 'Between 2am–4am WAT' : 'During business hours'}</span></div>
+            <div><span style="color:var(--crimson);display:inline-block;width:72px">Identity:</span><span style="color:var(--t2)">${(t.codes||[]).includes('FIRST_TIME_PAYER') ? 'Uses new email addresses' : 'Known customer account'}</span></div>
+            <div><span style="color:var(--crimson);display:inline-block;width:72px">Method:</span><span style="color:var(--t2)">${(t.codes||[]).includes('HIGH_VELOCITY') ? 'Rapid card testing — multiple attempts' : 'Single attempt'}</span></div>
+            <div><span style="color:var(--crimson);display:inline-block;width:72px">Card:</span><span style="color:var(--t2)">${(t.codes||[]).includes('BIN_PATTERN') ? 'BIN linked to multiple identities' : 'Single card use'}</span></div>
+            <div><span style="color:var(--crimson);display:inline-block;width:72px">Pattern:</span><span style="color:var(--t2)">${(t.codes||[]).includes('ROUND_AMOUNT') ? 'Tests with round amounts' : 'Realistic spend pattern'}</span></div>
+            <div style="border-top:1px solid #1e293b;margin-top:10px;padding-top:10px;"><span style="color:var(--crimson);display:inline-block;width:72px">Risk:</span><span style="color:var(--t2)">Score ${t.score}/100 — ${(t.codes||[]).length} signal${(t.codes||[]).length !== 1 ? 's' : ''} detected</span></div>
+          </div></div>` : ''}
           <div><div class="m-sec-lbl">Raw Payload</div><div class="raw">${JSON.stringify(t, null, 2)}</div></div>
         </div>
         <div class="modal-acts">${acts}</div>
@@ -988,6 +1007,142 @@ function toggleDisputes() {
   body.style.display = hidden ? "" : "none";
   chev.classList.toggle("up", hidden);
 }
+
+// ─── FRAUD NETWORK ───────────────────────────────────────────────────────────
+let _netSim    = null;
+let _netNodes  = [];
+let _netLinks  = [];
+let _netLinkG  = null;
+let _netNodeG  = null;
+let _netTooltip = null;
+
+const _netColor  = d => d.tier === 'GREEN' ? '#22c55e' : d.tier === 'AMBER' ? '#f59e0b' : '#ef4444';
+const _netRadius = d => 6 + ((d.score || 0) / 100) * 10;
+
+function _netDrag(sim) {
+  return d3.drag()
+    .on('start', (ev, d) => { if (!ev.active) sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+    .on('drag',  (ev, d) => { d.fx = ev.x; d.fy = ev.y; })
+    .on('end',   (ev, d) => { if (!ev.active) sim.alphaTarget(0); d.fx = null; d.fy = null; });
+}
+
+function _netBindHandlers(sel) {
+  sel
+    .on('mouseover', (ev, d) => {
+      _netTooltip.style('display', 'block')
+        .html(`<strong>${d.ref}</strong><br/>Tier: ${d.tier} &nbsp;·&nbsp; Score: ${d.score}<br/>Amount: ${money(d.amount)}<br/>BIN: ${d.card_bin || '—'}`);
+    })
+    .on('mousemove', ev => {
+      _netTooltip.style('left', (ev.clientX + 14) + 'px').style('top', (ev.clientY - 36) + 'px');
+    })
+    .on('mouseout', () => _netTooltip.style('display', 'none'));
+  return sel;
+}
+
+function buildNetwork() {
+  const svgEl = document.getElementById('fraud-network-svg');
+  if (!svgEl || typeof d3 === 'undefined') return;
+
+  // Stop any previous simulation before rebuilding
+  if (_netSim) { _netSim.stop(); _netSim = null; }
+  d3.select(svgEl).selectAll('*').remove();
+  const existingTip = document.getElementById('net-tooltip');
+  if (existingTip) existingTip.remove();
+
+  const W = svgEl.getBoundingClientRect().width || svgEl.parentElement?.getBoundingClientRect().width || 700;
+  const H = 320;
+
+  const svg = d3.select(svgEl).attr('width', W).attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
+  svg.append('rect').attr('width', W).attr('height', H).attr('fill', '#0b0b0b');
+
+  const g = svg.append('g');
+  _netLinkG = g.append('g');
+  _netNodeG = g.append('g');
+
+  _netTooltip = d3.select('body').append('div')
+    .attr('id', 'net-tooltip')
+    .style('position', 'fixed')
+    .style('background', '#1e293b')
+    .style('border', '1px solid #334155')
+    .style('border-radius', '6px')
+    .style('padding', '8px 12px')
+    .style('font-family', 'var(--ff-mono, monospace)')
+    .style('font-size', '11px')
+    .style('color', '#e2e8f0')
+    .style('pointer-events', 'none')
+    .style('display', 'none')
+    .style('z-index', '9999');
+
+  _netNodes = S.transactions.map(t => ({
+    id: t.ref, ref: t.ref, tier: t.tier, score: t.score,
+    amount: t.amount, card_bin: t.card_bin || '',
+  }));
+
+  _netLinks = [];
+  for (let i = 0; i < _netNodes.length; i++)
+    for (let j = i + 1; j < _netNodes.length; j++)
+      if (_netNodes[i].card_bin && _netNodes[i].card_bin === _netNodes[j].card_bin)
+        _netLinks.push({ source: _netNodes[i].id, target: _netNodes[j].id });
+
+  _netSim = d3.forceSimulation(_netNodes)
+    .force('link',      d3.forceLink(_netLinks).id(d => d.id).distance(80))
+    .force('charge',    d3.forceManyBody().strength(-200))
+    .force('center',    d3.forceCenter(W / 2, H / 2))
+    .force('collision', d3.forceCollide(20));
+
+  const linkSel = _netLinkG.selectAll('line').data(_netLinks).join('line')
+    .attr('stroke', '#334155').attr('stroke-opacity', 0.6).attr('stroke-width', 1);
+
+  const nodeSel = _netNodeG.selectAll('circle').data(_netNodes, d => d.id).join('circle')
+    .attr('r', _netRadius).attr('fill', _netColor)
+    .attr('filter', d => `drop-shadow(0 0 5px ${_netColor(d)})`)
+    .style('cursor', 'pointer')
+    .call(_netDrag(_netSim));
+  _netBindHandlers(nodeSel);
+
+  _netSim.on('tick', () => {
+    _netLinkG.selectAll('line')
+      .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    _netNodeG.selectAll('circle')
+      .attr('cx', d => d.x).attr('cy', d => d.y);
+  });
+}
+
+function addNodeToNetwork(txn) {
+  if (!_netSim || !txn || !_netLinkG) return;
+
+  if (_netNodes.some(n => n.id === txn.ref)) return;
+
+  const newNode = {
+    id: txn.ref, ref: txn.ref, tier: txn.tier, score: txn.score,
+    amount: txn.amount, card_bin: txn.card_bin || '',
+  };
+
+  const newLinks = _netNodes
+    .filter(n => n.card_bin && newNode.card_bin && n.card_bin === newNode.card_bin)
+    .map(n => ({ source: newNode.id, target: n.id }));
+
+  _netNodes.push(newNode);
+  _netLinks.push(...newLinks);
+
+  _netSim.nodes(_netNodes);
+  _netSim.force('link').links(_netLinks);
+
+  _netLinkG.selectAll('line').data(_netLinks).join('line')
+    .attr('stroke', '#334155').attr('stroke-opacity', 0.6).attr('stroke-width', 1);
+
+  const nodeSel = _netNodeG.selectAll('circle').data(_netNodes, d => d.id)
+    .join('circle')
+    .attr('r', _netRadius).attr('fill', _netColor)
+    .attr('filter', d => `drop-shadow(0 0 5px ${_netColor(d)})`)
+    .style('cursor', 'pointer')
+    .call(_netDrag(_netSim));
+  _netBindHandlers(nodeSel);
+
+  _netSim.alpha(0.4).restart();
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 //CHART
 let chart;

@@ -23,6 +23,7 @@ function initDB() {
   `);
   // Migrate: add features column if this is an existing database without it
   try { db.exec('ALTER TABLE transactions ADD COLUMN features TEXT'); } catch (_) {}
+  try { db.exec('ALTER TABLE transactions ADD COLUMN bin_info TEXT'); } catch (_) {}
   console.log('Database ready.');
 }
 
@@ -30,12 +31,13 @@ function initDB() {
 function saveTransaction(txn) {
   const stmt = db.prepare(`
     INSERT OR IGNORE INTO transactions
-      (ref, email, amount, card_bin, score, tier, reasons, features, timestamp, action_taken)
+      (ref, email, amount, card_bin, bin_info, score, tier, reasons, features, timestamp, action_taken)
     VALUES
-      (@ref, @email, @amount, @card_bin, @score, @tier, @reasons, @features, @timestamp, @action_taken)
+      (@ref, @email, @amount, @card_bin, @bin_info, @score, @tier, @reasons, @features, @timestamp, @action_taken)
   `);
   stmt.run({
     ...txn,
+    bin_info: JSON.stringify(txn.bin_info || null),
     reasons:  JSON.stringify(txn.reasons  || []),
     features: JSON.stringify(txn.features || {}),
   });
@@ -77,6 +79,7 @@ function getAllTransactions() {
     .all()
     .map(r => ({
       ...r,
+      bin_info: JSON.parse(r.bin_info || 'null'),
       reasons:  JSON.parse(r.reasons  || '[]'),
       features: JSON.parse(r.features || '{}'),
     }));

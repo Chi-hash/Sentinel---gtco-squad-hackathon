@@ -1,0 +1,1610 @@
+{
+  "376862": {
+    "brand": "AMERICAN EXPRESS",
+    "type": "credit",
+    "category": "",
+    "issuer": "AMERICAN EXPRESS"
+  },
+  "400066": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "403660": {
+    "brand": "VISA",
+    "type": "",
+    "category": "",
+    "issuer": "ACCESS BANK PLC"
+  },
+  "404905": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "UNITED BANK FOR AFRICA PLC"
+  },
+  "406995": {
+    "brand": "VISA",
+    "type": "",
+    "category": "",
+    "issuer": ""
+  },
+  "407127": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "electron",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "407467": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "corporate t&e",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "407469": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "corporate t&e",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "407586": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "business",
+    "issuer": "ACCESS BANK PLC"
+  },
+  "407591": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "business",
+    "issuer": "UNITED BANK FOR AFRICA PLC"
+  },
+  "408301": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "408302": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "premier",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "408303": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "408304": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "408305": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": ""
+  },
+  "408378": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "408379": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "premier",
+    "issuer": ""
+  },
+  "408380": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "408407": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "408408": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "premier",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "408409": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "408410": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "AFRIBANK NIGERIA PLC"
+  },
+  "408421": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "408422": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "premier",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "408423": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "408424": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "408425": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": ""
+  },
+  "412053": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "412702": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "infinite",
+    "issuer": "ACCESS BANK PLC"
+  },
+  "413103": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "413183": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "electron",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "416919": {
+    "brand": "VISA",
+    "type": "",
+    "category": "",
+    "issuer": ""
+  },
+  "417059": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "electron",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "418742": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "ACCESS BANK PLC"
+  },
+  "418743": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "ACCESS BANK PLC"
+  },
+  "419225": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "premier",
+    "issuer": "SKYE BANK PLC"
+  },
+  "419226": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "SKYE BANK PLC"
+  },
+  "419227": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "premier",
+    "issuer": "SKYE BANK PLC"
+  },
+  "419228": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": ""
+  },
+  "419760": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "premier",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "419761": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "platinum",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "419762": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "419763": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "419764": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "premier",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "419765": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "platinum",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "419766": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "419767": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "business",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "419768": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "420319": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "GUARANTY TRUST BANK PLC"
+  },
+  "420320": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "GUARANTY TRUST BANK PLC"
+  },
+  "420321": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "420332": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": ""
+  },
+  "420333": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "UNION"
+  },
+  "420334": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "premier",
+    "issuer": ""
+  },
+  "420335": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "platinum",
+    "issuer": ""
+  },
+  "420358": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "premier",
+    "issuer": "UNITED BANK FOR AFRICA PLC"
+  },
+  "420359": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "UNITED BANK FOR AFRICA PLC"
+  },
+  "422500": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": ""
+  },
+  "422584": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "UNITED BANK FOR AFRICA PLC"
+  },
+  "422594": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "UNITED BANK FOR AFRICA PLC"
+  },
+  "424226": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "424367": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "electron",
+    "issuer": "VALUCARD NIGERIA PLC"
+  },
+  "424465": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "VALUCARD NIGERIA PLC"
+  },
+  "427011": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "FIRST BANK OF NIGERIA PLC"
+  },
+  "427012": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "premier",
+    "issuer": "FIRST BANK OF NIGERIA PLC"
+  },
+  "427013": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "platinum",
+    "issuer": "FIRST BANK OF NIGERIA PLC"
+  },
+  "427014": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "FIRST BANK OF NIGERIA PLC"
+  },
+  "427872": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "electron",
+    "issuer": "OCEANIC BANK INTERNATIONAL (NIGERIA) PLC"
+  },
+  "427873": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "electron",
+    "issuer": "ACCESS BANK PLC"
+  },
+  "427875": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "electron",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "427876": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "electron",
+    "issuer": "FIRST BANK OF NIGERIA PLC"
+  },
+  "427877": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "electron",
+    "issuer": "SKYE BANK PLC"
+  },
+  "428222": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "electron",
+    "issuer": "GUARANTY TRUST BANK PLC"
+  },
+  "428223": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "electron",
+    "issuer": "UNITED BANK FOR AFRICA PLC"
+  },
+  "428225": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "electron",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "428270": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "electron",
+    "issuer": "WEMA BANK PLC"
+  },
+  "428272": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "electron",
+    "issuer": "UNION BANK OF NIGERIA PLC"
+  },
+  "428500": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "428501": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "premier",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "428502": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "428503": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "428504": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "428602": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "premier",
+    "issuer": ""
+  },
+  "428603": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "platinum",
+    "issuer": ""
+  },
+  "432226": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "FIRST CITY MONUMENT BANK PLC"
+  },
+  "433960": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "UNION BANK OF NIGERIA PLC"
+  },
+  "437360": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "corporate t&e",
+    "issuer": "SKYE BANK PLC"
+  },
+  "444582": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "UNITED BANK FOR AFRICA PLC"
+  },
+  "444585": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "UNITED BANK FOR AFRICA PLC"
+  },
+  "444586": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "UNITED BANK FOR AFRICA PLC"
+  },
+  "445493": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "445807": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "GUARANTY TRUST BANK PLC"
+  },
+  "445817": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "premier",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "446965": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "450073": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "450074": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "premier",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "450075": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "450090": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "450091": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "450092": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "450093": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "corporate t&e",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "457766": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "457768": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "457769": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "457770": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "457771": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "457803": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "457804": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "457805": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "457806": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "457807": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "458274": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "458301": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "premier",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "458478": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "458536": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "458587": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "premier",
+    "issuer": "STANDARD CHARTERED"
+  },
+  "458588": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "infinite",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "458792": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "458793": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "460053": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "premier",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "460054": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "460055": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "467768": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "467874": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "467875": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "FCMB"
+  },
+  "468588": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "469023": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "UNION BANK OF NIGERIA"
+  },
+  "469617": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "AFRIBANK NIGERIA PLC"
+  },
+  "469665": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "ACCESS BANK PLC"
+  },
+  "469666": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "premier",
+    "issuer": "ACCESS BANK PLC"
+  },
+  "469667": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "platinum",
+    "issuer": "ACCESS BANK PLC"
+  },
+  "470484": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "ACCESS BANK PLC"
+  },
+  "470651": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "470652": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "premier",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "470653": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "infinite",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "470654": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "corporate t&e",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "470655": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "471415": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "electron",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "471449": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "471463": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "premier",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "471464": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "472482": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "SKYE BANK PLC"
+  },
+  "473845": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "475175": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "ACCESS BANK PLC"
+  },
+  "475176": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "premier",
+    "issuer": "ACCESS BANK PLC"
+  },
+  "475177": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "ACCESS BANK PLC"
+  },
+  "484842": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "UNITED BANK FOR AFRICA PLC"
+  },
+  "485483": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "485484": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "488992": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "496009": {
+    "brand": "VISA",
+    "type": "credit",
+    "category": "classic",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "499910": {
+    "brand": "VISA",
+    "type": "debit",
+    "category": "business",
+    "issuer": "VISA NEW ZEAlanD"
+  },
+  "506122": {
+    "brand": "MAESTRO",
+    "type": "debit",
+    "category": "standard",
+    "issuer": "OCEANIC BANK"
+  },
+  "512269": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "standard",
+    "issuer": "ECOBANK NIGERIA PLC"
+  },
+  "512336": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK"
+  },
+  "512450": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "gold",
+    "issuer": "ECOBANK NIGERIA PLC"
+  },
+  "512451": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "ECOBANK NIGERIA PLC"
+  },
+  "513469": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "standard",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "514585": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "515692": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "business",
+    "issuer": "CSCBANK S.A.L."
+  },
+  "515803": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "ZENITH BANK"
+  },
+  "515883": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "gold",
+    "issuer": "CSCBANK S.A.L."
+  },
+  "517754": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "gold",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "517868": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": ""
+  },
+  "517960": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "CSCBANK S.A.L."
+  },
+  "518304": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "519863": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": ""
+  },
+  "519878": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": ""
+  },
+  "519885": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": ""
+  },
+  "519899": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "519902": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": ""
+  },
+  "519904": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "519905": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "519908": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "519909": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "519911": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": ""
+  },
+  "520053": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "521090": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": ""
+  },
+  "521623": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "521958": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "521982": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "521988": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "522899": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": ""
+  },
+  "523740": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "523776": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "524271": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "524275": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "524311": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "524687": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "525634": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "standard",
+    "issuer": "UNITED BANK FOR AFRICA PLC"
+  },
+  "525685": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "standard",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "525993": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "ECOBANK NIGERIA PLC"
+  },
+  "525994": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZHELDORBANK JSB"
+  },
+  "526897": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "gold",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "528047": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "CSCBANK S.A.L."
+  },
+  "528649": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "528650": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "528655": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "528668": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "528916": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "ECOBANK NIGERIA PLC"
+  },
+  "528917": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "ECOBANK NIGERIA PLC"
+  },
+  "528955": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "CSCBANK S.A.L."
+  },
+  "529539": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "529720": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "529975": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "prepaid",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "530519": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "ZENITH BANK"
+  },
+  "531165": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "prepaid",
+    "issuer": "UNITED BANK FOR AFRICA PLC"
+  },
+  "531213": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "platinum",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "531224": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "corporate",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "531498": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "prepaid",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "531499": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "prepaid",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "531504": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "prepaid",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "531505": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "prepaid",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "531525": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK"
+  },
+  "531667": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "platinum",
+    "issuer": "ECOBANK NIGERIA PLC"
+  },
+  "532330": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "standard",
+    "issuer": "CSCBANK S.A.L."
+  },
+  "532732": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "platinum",
+    "issuer": "GUARANTY TRUST BANK"
+  },
+  "532968": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "corporate",
+    "issuer": "ECOBANK NIGERIA PLC"
+  },
+  "533301": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "prepaid",
+    "issuer": "ZENITH BANK"
+  },
+  "533853": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "standard",
+    "issuer": "GUARANTY TRUST BANK"
+  },
+  "533856": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "prepaid",
+    "issuer": "GUARANTY TRUST BANK PLC"
+  },
+  "533897": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "prepaid",
+    "issuer": "CSCBANK S.A.L."
+  },
+  "535955": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "standard",
+    "issuer": "CSCBANK S.A.L."
+  },
+  "536399": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "prepaid",
+    "issuer": "UNITY BANK PLC"
+  },
+  "536439": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": ""
+  },
+  "537010": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "standard",
+    "issuer": "ECOBANK NIGERIA PLC"
+  },
+  "537011": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "standard",
+    "issuer": "ECOBANK NIGERIA PLC"
+  },
+  "537610": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "539586": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": ""
+  },
+  "539923": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "standard",
+    "issuer": "FIRST BANK OF NIGERIA PLC"
+  },
+  "539941": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "standard",
+    "issuer": "ZENITH BANK"
+  },
+  "539945": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "standard",
+    "issuer": "SKYE BANK PLC"
+  },
+  "539948": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": ""
+  },
+  "539983": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "standard",
+    "issuer": "GUARANTY TRUST BANK"
+  },
+  "540648": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "540884": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "prepaid",
+    "issuer": "ZENITH BANK"
+  },
+  "541508": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "GUARANTY TRUST BANK PLC"
+  },
+  "541569": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "GUARANTY TRUST BANK"
+  },
+  "542077": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "gold",
+    "issuer": "STANBIC IBTC BANK"
+  },
+  "542231": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "prepaid",
+    "issuer": "ZENITH BANK"
+  },
+  "543338": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "standard",
+    "issuer": "FIRST BANK OF NIGERIA PLC"
+  },
+  "546557": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "gold",
+    "issuer": "SKYE BANK PLC"
+  },
+  "547160": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "gold",
+    "issuer": "ZENITH BANK"
+  },
+  "547638": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "business",
+    "issuer": "CSCBANK S.A.L."
+  },
+  "548458": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "gold",
+    "issuer": "ECOBANK NIGERIA PLC"
+  },
+  "548644": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "OCEANIC BANK"
+  },
+  "548712": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "ECOBANK NIGERIA PLC"
+  },
+  "549970": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "gold",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "550019": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "gold",
+    "issuer": "CSCBANK S.A.L."
+  },
+  "551609": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "standard",
+    "issuer": "UNITY BANK PLC"
+  },
+  "552160": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "STANBIC IBTC BANK"
+  },
+  "552264": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "world card",
+    "issuer": "GUARANTY TRUST BANK PLC"
+  },
+  "552279": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "world card",
+    "issuer": "GUARANTY TRUST BANK"
+  },
+  "553420": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "corporate",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "555940": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "standard",
+    "issuer": "BANK PHB PLC"
+  },
+  "556350": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "557581": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": ""
+  },
+  "557669": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "standard",
+    "issuer": "CSCBANK S.A.L."
+  },
+  "557693": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "standard",
+    "issuer": "INTERCONTINENTAL BANK PLC"
+  },
+  "557694": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": ""
+  },
+  "557972": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "",
+    "issuer": "CSCBANK S.A.L."
+  },
+  "558773": {
+    "brand": "MASTERCARD",
+    "type": "credit",
+    "category": "corporate",
+    "issuer": "ECOBANK NIGERIA PLC"
+  },
+  "559424": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "559432": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "559441": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": "ZENITH BANK PLC"
+  },
+  "559443": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "standard",
+    "issuer": "ZENITH BANK"
+  },
+  "559447": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "standard",
+    "issuer": ""
+  },
+  "559453": {
+    "brand": "MASTERCARD",
+    "type": "debit",
+    "category": "",
+    "issuer": ""
+  }
+}

@@ -1,4 +1,4 @@
-const { R01, R02, R03, R04, R05, R06, R07, R08 } = require('./rules');
+const { R01, R02, R03, R04, R05, R06, R07, R08, R09, R10 } = require('./rules');
 
 // Loaded once at startup — never re-read on every call.
 const MODEL = require('../../ml/model.json');
@@ -27,7 +27,8 @@ const MAX_WEIGHTED_SCORE = MODEL.features.reduce(
 function scoreTransaction(transaction, db) {
   try {
     // ── Stage 1: Rule-based scoring ───────────────────────────────────────────
-    const rules = [R01, R02, R03, R04, R05, R06, R07, R08];
+    // R09 and R10 read transaction.bin_info (injected by receiver.js before scoring)
+    const rules = [R01, R02, R03, R04, R05, R06, R07, R08, R09, R10];
     const reasons = [];
     let stage1Score = 0;
 
