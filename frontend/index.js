@@ -500,7 +500,7 @@ function pushTransaction(t) {
   if (t.tier === "RED") {
     S.blocked++;
     bumpKPI("kpi-blocked-card", "kpi-blocked");
-    S.saved += Math.round(t.amount / 100); // convert kobo → naira for display
+    S.saved += Math.round(t.amount / 100);
     bumpKPI("kpi-saved-card", "kpi-saved");
     _autoAddDispute(t);
   }
