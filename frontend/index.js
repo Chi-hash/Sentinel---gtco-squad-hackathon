@@ -312,7 +312,12 @@ function applyFilter(q) {
         .some(s => s.textContent.toLowerCase().includes(q));
     }
 
-    const match = !q || emailMatch || cardMatch || amtMatch || tierMatch || signalMatch || statusMatch;
+    // Tag filter — independent of search text, matches status cell
+    const tagMatch = !_activeTag || (statusCell && statusCell.textContent.toLowerCase().includes(_activeTag));
+    // Text filter — applies within the tag-filtered set
+    const textMatch = !q || emailMatch || cardMatch || amtMatch || tierMatch || signalMatch || statusMatch;
+
+    const match = tagMatch && textMatch;
     row.style.display = match ? "" : "none";
     if (match) visible++;
   });
@@ -320,15 +325,9 @@ function applyFilter(q) {
   const meta = document.getElementById("feed-meta");
   if (meta) meta.textContent = `${visible} transaction${visible !== 1 ? "s" : ""}`;
 
-  // Update active filter pill
+  // Keep the active-filters pill hidden — tag buttons show their own active state
   const afContainer = document.getElementById("active-filters");
-  const afText = document.getElementById("af-text");
-  if (q && afContainer && afText) {
-    afText.textContent = q;
-    afContainer.style.display = "flex";
-  } else if (afContainer) {
-    afContainer.style.display = "none";
-  }
+  if (afContainer) afContainer.style.display = "none";
 }
 
 function clearEmailSearch() {
@@ -340,52 +339,49 @@ function clearEmailSearch() {
 }
 
 function clearActiveFilter() {
+  _activeTag = null;
+  document.querySelectorAll(".tag-chip").forEach(c => c.classList.remove("active"));
   clearEmailSearch();
-  document.querySelectorAll(".tag-chip").forEach(t => t.classList.remove("active"));
 }
 
 const POPULAR_TAGS = [
-  { label: "GREEN",    color: "jade",    field: "tier" },
-  { label: "AMBER",   color: "amber",   field: "tier" },
-  { label: "RED",     color: "crimson", field: "tier" },
-  { label: "approved", color: "jade",   field: "status" },
-  { label: "flagged",  color: "amber",  field: "status" },
-  { label: "blocked",  color: "crimson",field: "status" },
+  { label: "approved", color: "jade"    },
+  { label: "flagged",  color: "amber"   },
+  { label: "blocked",  color: "crimson" },
 ];
+
+let _activeTag = null;
 
 function buildTagCloud() {
   const container = document.getElementById("tag-cloud");
   if (!container) return;
 
-  const counts = { GREEN: 0, AMBER: 0, RED: 0, approved: 0, flagged: 0, blocked: 0 };
-
+  const counts = { approved: 0, flagged: 0, blocked: 0 };
   S.transactions.forEach(t => {
-    if (t.tier   && counts[t.tier]   !== undefined) counts[t.tier]++;
     if (t.status && counts[t.status] !== undefined) counts[t.status]++;
   });
 
   const tagsHtml = POPULAR_TAGS.map(tag => {
     const count = counts[tag.label] || 0;
     if (count === 0) return "";
-    return `<button class="tag-chip tag-${tag.color}" data-tag="${tag.label}" onclick="clickTag('${tag.label}', this)">${tag.label} <span class="tag-count">${count}</span></button>`;
+    const isActive = _activeTag === tag.label;
+    return `<button class="tag-chip tag-${tag.color}${isActive ? ' active' : ''}" data-tag="${tag.label}" onclick="clickTag('${tag.label}', this)">${tag.label} <span class="tag-count">${count}</span></button>`;
   }).join("");
 
-  container.innerHTML = `<span class="tag-cloud-label">Quick filters:</span>${tagsHtml}`;
+  container.innerHTML = `<span class="tag-cloud-label">Quick filters:</span>${tagsHtml || '<span style="color:var(--t3);font-size:11px">No transactions yet</span>'}`;
 }
 
 function clickTag(tag, btn) {
-  const input = document.getElementById("email-search");
-  if (!input) return;
-
   if (btn.classList.contains("active")) {
-    clearActiveFilter();
-    return;
+    _activeTag = null;
+    document.querySelectorAll(".tag-chip").forEach(c => c.classList.remove("active"));
+  } else {
+    _activeTag = tag.toLowerCase();
+    document.querySelectorAll(".tag-chip").forEach(c => c.classList.remove("active"));
+    btn.classList.add("active");
   }
-
-  document.querySelectorAll(".tag-chip").forEach(t => t.classList.remove("active"));
-  btn.classList.add("active");
-  input.value = tag.toLowerCase();
-  filterFeed();
+  const q = document.getElementById("email-search")?.value.trim().toLowerCase() || "";
+  applyFilter(q);
 }
 
 function refreshTagCloud() {
