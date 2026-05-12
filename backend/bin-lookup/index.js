@@ -27,6 +27,7 @@ function parseCSVLine(line) {
   }
   fields.push(current.trim());
   return fields;
+  //
 }
 
 // ── Load BIN data into memory ─────────────────────────────────────────────────
