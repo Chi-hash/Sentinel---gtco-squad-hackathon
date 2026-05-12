@@ -114,6 +114,7 @@ function hydrateFromDB() {
         renderFeed();
         syncKPIs();
         updateNotifBadge();
+        buildTagCloud();
         // Show the most recent transaction's time in the header
         const newest = S.transactions.find(t => t.time || t.timestamp);
         if (newest) {
