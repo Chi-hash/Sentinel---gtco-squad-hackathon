@@ -52,13 +52,55 @@ let _amberIdx = 0;
 function _badEmail()   { return BAD_EMAILS[_badIdx++   % BAD_EMAILS.length];   }
 function _amberEmail() { return AMBER_EMAILS[_amberIdx++ % AMBER_EMAILS.length]; }
 
-// Card BINs (Visa / Mastercard / Verve)
-// GREEN  → known-good personal/corporate cards
-// AMBER  → prepaid or recently-seen high-risk BINs
-// RED    → BINs associated with test/stolen card patterns
-const BINS_GREEN = ['411111','451273','476148','428616','435592','438857','462203'];
-const BINS_AMBER = ['539983','527841','521456','545501','512345','530956','556084'];
-const BINS_RED   = ['400000','490116','402918','401177','403245','400115','492950'];
+// Card BINs — real Nigerian-issued BINs from the BIN database
+// GREEN  → legitimate Nigerian debit/credit cards from major banks
+//          small mix of foreign (Nigerians abroad, PayPal/foreign cards are legit)
+// AMBER  → Nigerian credit or lesser-known BINs worth reviewing
+// RED    → foreign BINs used in card-fraud patterns on Nigerian merchants
+const BINS_GREEN = [
+  '420320', // GTBank Visa Debit
+  '407127', // Zenith Visa Debit
+  '407591', // UBA Visa Debit
+  '418742', // Access Visa Debit
+  '514585', // Zenith Mastercard Debit
+  '518304', // Zenith Mastercard Debit
+  '519899', // Zenith Mastercard Debit
+  '521958', // Zenith Mastercard Debit
+  '519904', // Zenith Mastercard Debit
+  '404905', // UBA Visa Credit
+  '412053', // Zenith Visa Debit
+  '413103', // Zenith Visa Debit
+  '419760', // Zenith Visa Debit
+  '419762', // Zenith Visa Debit
+  '403660', // Access Bank Visa
+  '420319', // GTBank Visa Credit
+];
+const BINS_AMBER = [
+  '512269', // Ecobank Mastercard Credit
+  '512450', // Ecobank Mastercard Credit
+  '513469', // Zenith Mastercard Credit
+  '515803', // Zenith Mastercard Credit
+  '521623', // Intercontinental Mastercard Credit
+  '521982', // Zenith Mastercard Credit
+  '400066', // Intercontinental Visa Credit
+  '408378', // Zenith Visa Credit
+  '408407', // Zenith Visa Credit
+  '419225', // Skye Bank Visa Credit
+  '420358', // UBA Visa Credit
+  '512336', // Zenith Mastercard Credit
+];
+const BINS_RED = [
+  '411111', // JPMorgan Chase (US) — common in card testing
+  '400000', // Generic Visa (US) — used in BIN attacks
+  '438857', // Chase Bank USA
+  '462203', // Generic US Visa
+  '476148', // Yamagin Credit Japan
+  '403245', // Banco Citicard Brazil
+  '400115', // Barclays UK
+  '545501', // NatWest UK Mastercard
+  '490116', // Generic Visa
+  '492950', // Generic Visa
+];
 
 // Amounts (in kobo — 1 NGN = 100 kobo)
 // GREEN:  ₦1,200 – ₦45,000  (everyday POS / e-commerce)
