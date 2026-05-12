@@ -1011,7 +1011,7 @@ body {
   background: var(--crimson);
 }
 
-/* ── TABLE ── */
+/*TABLE*/
 .tbl-wrap {
   overflow-x: auto;
 }
@@ -1137,7 +1137,7 @@ body {
   color: var(--jade);
   border-color: rgba(46, 213, 115, 0.2);
 }
-/* ── Notification Bell ─────────────────────────────── */
+/*Notification Bell*/
 .notif-wrap {
   position: relative;
   display: inline-block;
@@ -1202,7 +1202,7 @@ body {
   }
 }
 
-/* ── Alert Panel ───────────────────────────────────── */
+/*Alert Panel */
 .notif-panel {
   position: absolute;
   top: calc(100% + 12px);
