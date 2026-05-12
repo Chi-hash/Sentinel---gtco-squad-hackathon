@@ -88,12 +88,9 @@ function hydrateFromDB() {
           reasons: r.reasons || [],
           features: r.features || {},
           status:
-            r.action_taken ||
-            (r.tier === "GREEN"
-              ? "approved"
-              : r.tier === "AMBER"
-                ? "flagged"
-                : "blocked"),
+            r.action_taken === "refunded" ? "blocked"
+            : r.action_taken ||
+              (r.tier === "GREEN" ? "approved" : r.tier === "AMBER" ? "flagged" : "blocked"),
           time: fmtTime(r.timestamp),
           timestamp: r.timestamp,
           model_trained: true,
