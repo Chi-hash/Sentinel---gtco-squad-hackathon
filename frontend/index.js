@@ -28,7 +28,10 @@ const RSN = {
   BIN_PATTERN: "Card BIN linked to multiple emails",
   BEHAVIOUR_MISMATCH: "Sudden jump from habitual amounts",
   HIGH_VALUE_NEW: "First-timer with very high payment",
-  SCORING_ERROR: "Fallback score — engine error",
+  SCORING_ERROR: "Fallback score engine error",
+  FOREIGN_CARD:  'Card issued outside Nigeria may be legitimate',
+  PREPAID_CARD:  'Prepaid card elevated chargeback risk',
+  UNKNOWN_BIN:   'Card BIN not in known issuer database',
 };
 
 //BOOT
@@ -77,6 +80,7 @@ function hydrateFromDB() {
           timestamp: r.timestamp,
           model_trained: true,
           _notifRead: r.tier !== "RED",
+          bin_info: r.bin_info || null,
         };
         S.transactions.push(t);
         S.total++;
@@ -380,6 +384,7 @@ function buildRow(t, anim) {
     <td class="tc-time">${t.time || fmtTime(t.timestamp)}</td>
     <td class="tc-amt">${money(t.amount)}</td>
     <td class="tc-email">${t.email}</td>
+    <td class="tc-card" style="font-size:11px;color:var(--t2)">${t.bin_info?.bank ? t.bin_info.bank.split(' ')[0] : (t.card_bin || '—')}</td>
     <td>
       <div class="sc-block">
         <span class="sc-val" style="color:${scCol(t.score)}">${t.score}</span>
@@ -585,13 +590,16 @@ function openModal(ref) {
         </div>
         <div class="modal-body">
           <div><div class="m-sec-lbl">Basic Info</div>
-            <div class="i2col">
+             <div class="i2col">
               <div class="ibox"><div class="ibox-lbl">Amount</div><div class="ibox-val">${money(t.amount)}</div></div>
               <div class="ibox"><div class="ibox-lbl">Time</div><div class="ibox-val">${t.time || fmtTime(t.timestamp)}</div></div>
               <div class="ibox"><div class="ibox-lbl">Customer</div><div class="ibox-val">${t.email}</div></div>
+              <div class="ibox"><div class="ibox-lbl">Card</div><div class="ibox-val">${t.bin_info?.bank ? `${t.bin_info.bank} · ${t.bin_info.brand} ${t.bin_info.type}` : (t.card_bin || '—')}</div></div>
+              <div class="ibox"><div class="ibox-lbl">Card Origin</div><div class="ibox-val" style="color:${!t.bin_info ? 'var(--t3)' : t.bin_info.is_nigerian ? 'var(--jade)' : 'var(--amber)'}">${!t.bin_info ? '— Unknown' : t.bin_info.is_nigerian ? `🇳🇬 Nigerian (${t.bin_info.country})` : `🌍 Foreign (${t.bin_info.country})`}</div></div>
               <div class="ibox"><div class="ibox-lbl">Status</div><div class="ibox-val">${(t.status || (t.tier === "GREEN" ? "approved" : t.tier === "AMBER" ? "flagged" : "blocked")).toUpperCase()}</div></div>
-            </div></div>
-          <div><div class="m-sec-lbl">AI Trust Score</div>
+          </div></div>
+          <div>
+          <div class="m-sec-lbl">AI Trust Score</div>
             <div class="gauge-row">
               <div class="gauge" style="border-color:${col}"><span class="gauge-sc" style="color:${col}">${t.score}</span></div>
               <div class="g-right">
@@ -599,7 +607,14 @@ function openModal(ref) {
                 <div class="g-desc">${t.tier === "GREEN" ? "Low risk — safe to process." : t.tier === "AMBER" ? "Medium risk — review before fulfillment." : "High risk — automatically blocked."}</div>
               </div>
             </div></div>
-          <div><div class="m-sec-lbl">Risk Signals</div>${reasons}</div>
+            <div><div class="m-sec-lbl">Risk Signals</div>${reasons}</div>
+          ${t.tier === "RED" ? `
+          <div><div class="m-sec-lbl">Fraudster Profile</div>
+            <div style="background:var(--bg3);border:1px solid var(--line);border-radius:var(--r);padding:12px;">
+              <div><span style="color:var(--crimson);display:inline-block;width:72px">Origin:</span><span style="color:var(--t2)">${!t.bin_info ? 'Unknown BIN — not in database' : t.bin_info.is_nigerian ? `Nigerian card · ${t.bin_info.bank || t.bin_info.brand}` : `Foreign card · ${t.bin_info.country} · ${t.bin_info.bank || t.bin_info.brand}`}</span></div>
+              <div style="border-top:1px solid #1e293b;margin-top:10px;padding-top:10px;"><span style="color:var(--crimson);display:inline-block;width:72px">Risk:</span><span style="color:var(--t2)">${t.tier} — ${t.score}/100 · ${(t.codes || []).length} signal(s) triggered</span></div>
+            </div>
+          </div>` : ""}
           ${feats ? `<div><div class="m-sec-lbl">Feature Deviations</div>${feats}</div>` : ""}
           <div><div class="m-sec-lbl">Raw Payload</div><div class="raw">${JSON.stringify(t, null, 2)}</div></div>
         </div>

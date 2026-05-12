@@ -1615,12 +1615,16 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+  min-width: 0;
+
 }
 .ibox {
   background: var(--bg3);
   border: 1px solid var(--line);
   border-radius: var(--r);
   padding: 10px 12px;
+  min-width: 0;     
+  overflow: hidden; 
 }
 .ibox-lbl {
   font-size: 9px;
@@ -1634,6 +1638,9 @@ body {
   font-size: 13px;
   color: var(--t1);
   font-weight: 500;
+  overflow: hidden;        
+  text-overflow: ellipsis; 
+  white-space: nowrap;
 }
 
 .gauge-row {
