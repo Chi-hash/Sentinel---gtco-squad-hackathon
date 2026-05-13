@@ -9,7 +9,6 @@ const path = require('path');
 
 const CSV_PATH = path.join(__dirname, '../../binlist-data.csv');
 
-// ── Parse a single CSV line, respecting double-quoted fields ─────────────────
 function parseCSVLine(line) {
   const fields = [];
   let current  = '';
@@ -30,7 +29,6 @@ function parseCSVLine(line) {
   //
 }
 
-// ── Load BIN data into memory ─────────────────────────────────────────────────
 // Prefer the full CSV (339k records) when present; fall back to the committed
 // slim JSON (Nigerian BINs + all simulate.js BINs) so the app works out of the box.
 const SLIM_PATH = path.join(__dirname, 'bins_slim.json');
@@ -69,7 +67,6 @@ if (!loaded) {
   }
 }
 
-// ── Public API ────────────────────────────────────────────────────────────────
 
 /**
  * Look up a card BIN (first 6 digits).

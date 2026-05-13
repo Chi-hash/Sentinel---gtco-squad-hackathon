@@ -10,7 +10,6 @@
 
 const nodemailer = require('nodemailer');
 
-// ── Transporter — created once at module load ─────────────────────────────────
 let transporter = null;
 
 function getTransporter() {
@@ -32,7 +31,6 @@ function getTransporter() {
   return transporter;
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 function money(kobo) {
   return '₦' + (Number(kobo) / 100).toLocaleString('en-NG', { minimumFractionDigits: 2 });
 }
@@ -46,7 +44,6 @@ function tierColour(tier) {
   return tier === 'GREEN' ? '#16a34a' : tier === 'AMBER' ? '#d97706' : '#dc2626';
 }
 
-// ── Email templates ───────────────────────────────────────────────────────────
 
 function buildRedAlertHTML(txn) {
   const signals = (txn.reasons || []).map(r =>
@@ -204,7 +201,6 @@ function buildAmberBurstHTML(transactions) {
 </html>`;
 }
 
-// ── Public send functions ─────────────────────────────────────────────────────
 
 async function sendFraudAlert(txn) {
   const t = getTransporter();

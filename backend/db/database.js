@@ -4,7 +4,6 @@ const path = require('path');
 // Create (or open) the database file
 const db = new Database(path.join(__dirname, '../../sentinel.sqlite'));
 
-// ── Create table on first run ─────────────────────────────────────────────────
 function initDB() {
   db.exec(`
     CREATE TABLE IF NOT EXISTS transactions (
@@ -29,7 +28,6 @@ function initDB() {
   console.log('Database ready.');
 }
 
-// ── Write ─────────────────────────────────────────────────────────────────────
 function saveTransaction(txn) {
   const stmt = db.prepare(`
     INSERT OR IGNORE INTO transactions
@@ -52,7 +50,6 @@ function updateTransactionStatus(ref, status, tier) {
     .run(status, tier, ref);
 }
 
-// ── Read ──────────────────────────────────────────────────────────────────────
 function transactionExists(ref) {
   const row = db.prepare('SELECT id FROM transactions WHERE ref = ?').get(ref);
   return !!row;

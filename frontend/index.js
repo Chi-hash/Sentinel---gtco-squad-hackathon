@@ -36,7 +36,6 @@ const RSN = {
     "Squad's own risk engine independently flagged this transaction",
 };
 
-//BOOT
 document.addEventListener("DOMContentLoaded", () => {
   checkMerchantSetup(); // show onboarding if not yet connected
 });
@@ -142,7 +141,6 @@ function hydrateFromDB() {
     .catch(() => {});
 }
 
-//SIDEBAR TOGGLE
 function toggleSidebar() {
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("mob-overlay");
@@ -162,7 +160,6 @@ function toggleSidebar() {
   }, 320);
 }
 
-//NOTIFICATIONS
 function toggleNotifications() {
   const panel = document.getElementById("notif-panel");
   const isOpen = panel.classList.toggle("open");
@@ -239,7 +236,6 @@ document.addEventListener("click", (e) => {
   }
 });
 
-//UTILS
 const money = (n) => "₦" + (Number(n) / 100).toLocaleString();
 const scCol = (s) =>
   s < 31 ? "var(--jade)" : s < 71 ? "var(--amber)" : "var(--crimson)";
@@ -293,7 +289,6 @@ function emailToName(email) {
     .replace(/\s+/g, " ")
     .trim();
 }
-//FEED
 function renderFeed() {
   document.getElementById("txn-body").innerHTML = S.transactions
     .slice(0, 50)
@@ -303,7 +298,6 @@ function renderFeed() {
     `${Math.min(S.transactions.length, 50)} transactions`;
 }
 
-//FILTER ENGINE
 
 function filterFeed() {
   const q =
@@ -469,6 +463,10 @@ function buildRow(t, anim) {
     });
   };
 
+  const squadIntel = t.is_suspicious
+    ? `<span style="display:inline-block; white-space:nowrap; font-size:10px; padding:4px 6px; background:var(--amber-dim); color:var(--amber); border:1px solid rgba(240,165,0,0.3); border-radius:4px; font-weight:600;">Squad Flagged</span>`
+    : `<span style="font-size:10px; color:var(--t3); font-family:var(--ff-mono);">Cleared</span>`;
+
   return `<tr class="${rowCls(t.tier)} ${anim ? "slide-in" : ""}" onclick="openModal('${t.ref}')">
     <td class="tc-date">${fmtDate(t.timestamp)}</td> 
     <td class="tc-time">${t.time || fmtTime(t.timestamp)}${t.source === "historical" ? ' <span class="badge-hist">HIST</span>' : ""}</td>
@@ -481,6 +479,7 @@ function buildRow(t, anim) {
         <div class="sc-track"><div class="sc-fill" style="width:${t.score}%;background:${scCol(t.score)}"></div></div>
       </div>
     </td>
+    <td>${squadIntel}</td>
     <td>${codes}</td>
     <td>${status}</td>
     <td>${action}</td>
@@ -615,13 +614,12 @@ function bumpKPI(cardId, numId) {
   card.classList.add("kpi-bump");
 }
 
-//TOAST
 function showToast(t) {
   const rack = document.getElementById("toasts");
   const el = document.createElement("div");
   const cls =
     t.tier === "RED" ? "toast-r" : t.tier === "AMBER" ? "toast-a" : "toast-g";
-  const icon = t.tier === "RED" ? "🚫" : t.tier === "AMBER" ? "⚠️" : "✅";
+  const icon = "";
   const lbl =
     t.tier === "RED" ? "BLOCKED" : t.tier === "AMBER" ? "FLAGGED" : "APPROVED";
   el.className = `toast ${cls}`;
@@ -630,7 +628,6 @@ function showToast(t) {
   setTimeout(() => el.remove(), t.tier === "RED" ? 5500 : 3000);
 }
 
-//MODAL
 function openModal(ref) {
   const t = S.transactions.find((x) => x.ref === ref);
   if (!t) return;
@@ -642,8 +639,8 @@ function openModal(ref) {
   const col = scCol(t.score);
   const mtag =
     t.model_trained !== false
-      ? `<span class="m-tag on">● AI MODEL ACTIVE</span>`
-      : `<span class="m-tag off">◌ LEARNING MODE</span>`;
+      ? `<span class="m-tag on">AI MODEL ACTIVE</span>`
+      : `<span class="m-tag off">LEARNING MODE</span>`;
 
   const reasons = (t.codes || []).length
     ? (t.codes || [])
@@ -673,8 +670,8 @@ function openModal(ref) {
     t.tier === "GREEN"
       ? `<button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`
            : t.tier === "AMBER"
-        ? `<button class="mb mb-ok" onclick="approveIt('${t.ref}')">✓ APPROVE</button><button class="mb mb-fl" onclick="partialRefundModal('${t.ref}', ${t.amount})">↩ PARTIAL REFUND</button><button class="mb mb-fl" onclick="closeModal()">⚑ FLAG</button><button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`
-               : `<button class="mb mb-rf" onclick="closeModal()">↩ REFUND</button><button class="mb mb-fl" onclick="cancelTokenModal('${t.ref}')">CANCEL CARD TOKEN</button><button class="mb mb-dp" onclick="disputeModal('${t.ref}')">⚖ FIGHT DISPUTE</button><button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`;
+        ? `<button class="mb mb-ok" onclick="approveIt('${t.ref}')">APPROVE</button><button class="mb mb-fl" onclick="partialRefundModal('${t.ref}', ${t.amount})">PARTIAL REFUND</button><button class="mb mb-fl" onclick="closeModal()">FLAG</button><button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`
+               : `<button class="mb mb-rf" onclick="closeModal()">REFUND</button><button class="mb mb-fl" onclick="cancelTokenModal('${t.ref}')">CANCEL CARD TOKEN</button><button class="mb mb-dp" onclick="disputeModal('${t.ref}')">FIGHT DISPUTE</button><button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`;
 
   document.getElementById("modal-mount").innerHTML = `
     <div class="modal-overlay" onclick="closeModal()">
@@ -720,10 +717,10 @@ function openModal(ref) {
                 <span class="si-val">${t.score}/100 — ${t.tier}</span>
               </div>
               <div class="si-combined">
-                ${t.tier === 'RED' && t.is_suspicious ? '🚨 DUAL CONFIRMED FRAUD' :
-                  (t.tier === 'RED' || t.tier === 'AMBER') && !t.is_suspicious ? '⚠️ SENTINEL CAUGHT IT' :
-                  t.tier === 'GREEN' && t.is_suspicious ? '⚠️ SQUAD FLAGGED IT' :
-                  '✅ BOTH CLEAR'}
+                ${t.tier === 'RED' && t.is_suspicious ? 'DUAL CONFIRMED FRAUD' :
+                  (t.tier === 'RED' || t.tier === 'AMBER') && !t.is_suspicious ? 'SENTINEL CAUGHT IT' :
+                  t.tier === 'GREEN' && t.is_suspicious ? 'SQUAD FLAGGED IT' :
+                  'BOTH CLEAR'}
               </div>
             </div></div>
             <div><div class="m-sec-lbl">Risk Signals</div>${reasons}</div>
@@ -918,7 +915,7 @@ th { background: #f1f5f9; padding: 8px 12px; text-align: left; font-size: 10px; 
     <div class="sec-title">Summary</div>
     <div class="grid">
       <div class="card"><div class="card-lbl">Amount</div><div class="card-val">${fmtMoney(t.amount)}</div></div>
-      <div class="card"><div class="card-lbl">Customer</div><div class="card-val" style="font-size:13px">${t.email}</div></div>
+      <div class="card"><div class="card-lbl">Customer</div><div class="card-val" style="font-size:13px">${emailToName(t.email)}<br/><span style="font-size:11px;color:#64748b;font-weight:400">${t.email}</span></div></div>
       <div class="card"><div class="card-lbl">Time</div><div class="card-val" style="font-size:13px">${timeStr}</div></div>
       <div class="card"><div class="card-lbl">Decision</div><div class="card-val" style="color:${col}">${(t.status || t.tier).toUpperCase()}</div></div>
     </div>
@@ -1106,7 +1103,6 @@ function submitEvidence(ref) {
   setTimeout(() => el.remove(), 3500);
 }
 
-//DISPUTES
 function renderDisputes() {
   document.getElementById("disputes-tbody").innerHTML = S.disputes
     .map(
@@ -1138,7 +1134,6 @@ function toggleDisputes() {
   chev.classList.toggle("up", hidden);
 }
 
-//CHART
 let chart;
 const CD = [
   18, 22, 15, 20, 35, 42, 28, 19, 30, 45, 38, 52, 48, 55, 40, 35, 62, 78, 55,
@@ -1224,7 +1219,6 @@ function nudgeChart(score) {
   chart.update("none");
 }
 
-//SOCKET
 function initSocket() {
   if (typeof io !== "undefined") {
     const socket = io();
@@ -1244,7 +1238,6 @@ function initSocket() {
   }
 }
 
-//DEMO
 function startDemo() {
   S.demoTimer = setInterval(() => {
     const r = Math.random();
@@ -1270,7 +1263,6 @@ function toggleDemo() {
   }
 }
 
-//SETTINGS MODAL
 function toggleSettings() {
   const mount = document.getElementById("settings-mount");
   if (mount.innerHTML) {
@@ -1357,7 +1349,7 @@ function saveSettings() {
   toggleSettings();
   const el = document.createElement("div");
   el.className = "toast toast-g";
-  el.innerHTML = `<span class="t-icon">✅</span><div class="t-body"><strong>SAVED</strong><br/>Settings updated successfully</div>`;
+  el.innerHTML = `<span class="t-icon"></span><div class="t-body"><strong>SAVED</strong><br/>Settings updated successfully</div>`;
   document.getElementById("toasts").appendChild(el);
   setTimeout(() => el.remove(), 2500);
 }

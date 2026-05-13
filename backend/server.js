@@ -10,22 +10,17 @@ const squadApi  = require('./squad-client/api');
 const binLookup = require('./bin-lookup');
 const scorer    = require('./ai-engine/scorer');
 
-// ── Global safety net — prevents any single unhandled error from killing the process ──
 process.on('uncaughtException',  (err) => console.error('[Sentinel] uncaughtException:', err.message));
 process.on('unhandledRejection', (err) => console.error('[Sentinel] unhandledRejection:', err?.message ?? err));
 
-// ── App + server setup ────────────────────────────────────────────────────────
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// ── Database ──────────────────────────────────────────────────────────────────
 db.initDB();
 
-// ── Static frontend ───────────────────────────────────────────────────────────
 app.use(express.static(path.join(__dirname, '../frontend')));
 
-// ── Webhook route (raw body — MUST come before express.json) ──────────────────
 // express.raw keeps req.body as a Buffer so HMAC-SHA512 validation works correctly.
 app.post(
   '/webhook/squad',
@@ -36,7 +31,6 @@ app.post(
   })
 );
 
-// ── JSON middleware + REST API (after webhook route) ──────────────────────────
 app.use(express.json());
 
 app.get('/api/transactions', async (req, res) => {
@@ -212,13 +206,11 @@ app.patch('/api/transactions/:ref/cancel-token', async (req, res) => {
   }
 });
 
-// ── Socket.io connection logging ──────────────────────────────────────────────
 io.on('connection', (socket) => {
   console.log('[Socket.io] client connected');
   socket.on('disconnect', () => console.log('[Socket.io] client disconnected'));
 });
 
-// ── Start ─────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Sentinel running on http://localhost:${PORT}`);

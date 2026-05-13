@@ -3,7 +3,6 @@ const { R01, R02, R03, R04, R05, R06, R07, R08, R09, R10 } = require('./rules');
 // Loaded once at startup — never re-read on every call.
 const MODEL = require('../../ml/model.json');
 
-// ── Scaler ────────────────────────────────────────────────────────────────────
 // Applies the same StandardScaler transformation used during training.
 // Without this, 'amount' (range 0–50M) would dominate every other feature.
 // model.json now exports scaler.mean and scaler.std for each feature.
@@ -16,7 +15,6 @@ function scaleFeature(name, value) {
   return std === 0 ? 0 : (value - mean) / std;
 }
 
-// ── Feature weights (now from scaled data — all features contribute) ──────────
 // Prefer Random Forest feature importances (supervised, more reliable).
 // Fall back to Isolation Forest MAD weights.
 const FEATURE_WEIGHTS =
@@ -25,7 +23,6 @@ const FEATURE_WEIGHTS =
   MODEL.feature_weights ||
   {};
 
-// ── Probability calibration ───────────────────────────────────────────────────
 // Polynomial coefficients exported from train_model.py.
 // At runtime: fraud_prob = clip(a*x^2 + b*x + c, 0, 1)  where x = normalised score
 // This gives a CONTINUOUS 0–1 fraud probability grounded in real RF predict_proba,
@@ -49,7 +46,6 @@ const FEATURES     = MODEL.features        || [];
  */
 function scoreTransaction(transaction, db) {
   try {
-    // ── Stage 1: Rule-based scoring ───────────────────────────────────────────
     const rules = [R01, R02, R03, R04, R05, R06, R07, R08, R09, R10];
     const reasons = [];
     let stage1Score = 0;
@@ -61,7 +57,6 @@ function scoreTransaction(transaction, db) {
     }
     stage1Score = Math.min(70, stage1Score);
 
-    // ── Stage 2: Z-score anomaly detection ───────────────────────────────────
     const history = db.getUserHistory(transaction.email);
     let stage2Score = 0;
 
@@ -80,7 +75,6 @@ function scoreTransaction(transaction, db) {
       }
     }
 
-    // ── Stage 3: ML model feature scoring (with proper scaling) ──────────────
     const watHour     = (new Date(transaction.timestamp).getUTCHours() + 1) % 24;
     const isFirstTime = (!history || history.length === 0) ? 1 : 0;
     const velocity    = db.getRecentByEmail(transaction.email, 5).length;
@@ -122,7 +116,6 @@ function scoreTransaction(transaction, db) {
     if   (fraudProb > 0.7) reasons.push('ML_HIGH_RISK');
     else if (fraudProb > 0.4) reasons.push('ML_MEDIUM_RISK');
 
-    // ── Final score & tier ────────────────────────────────────────────────────
     const totalScore = Math.min(100, Math.round(stage1Score + stage2Score + stage3Score));
 
     let tier;

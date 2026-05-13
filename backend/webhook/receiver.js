@@ -12,7 +12,6 @@ async function receiveWebhook(req, res, db, io) {
   try {
     const isDemo = req.headers['x-demo-mode'] === 'true';
     console.log(`[Webhook] Incoming — demo=${isDemo}`);
-    // ── Step 1: HMAC-SHA512 signature validation ──────────────────────────────
     // Skip in demo mode so simulate.js can trigger the pipeline without real credentials.
     if (!isDemo) {
       const incomingSignature = req.headers['x-squad-encrypted-body'];
@@ -31,7 +30,6 @@ async function receiveWebhook(req, res, db, io) {
       console.log('[Webhook] Signature OK');
     }
 
-    // ── Step 2: Parse body ────────────────────────────────────────────────────
     const payload = JSON.parse(req.body.toString());
 
     // Squad real webhook:  { Event, TransactionRef, Body: {...} }
@@ -65,13 +63,11 @@ async function receiveWebhook(req, res, db, io) {
       return res.status(400).json({ error: 'Unknown payload structure' });
     }
 
-    // ── Step 3: Deduplicate ───────────────────────────────────────────────────
     const alreadyProcessed = await db.transactionExists(transaction_ref);
     if (alreadyProcessed) {
       return res.status(200).json({ message: 'Already processed' });
     }
 
-    // ── Step 4: BIN enrichment + Score ───────────────────────────────────────
     const bin_info = binLookup.lookupBin(card_bin);
     if (bin_info) {
       const origin = bin_info.is_nigerian ? 'Nigerian' : `Foreign (${bin_info.country})`;
@@ -85,7 +81,6 @@ async function receiveWebhook(req, res, db, io) {
       db
     );
 
-    // ── Step 5: Persist ───────────────────────────────────────────────────────
     const action_taken =
       tier === 'GREEN' ? 'approved' : tier === 'AMBER' ? 'flagged' : 'refunded';
 
@@ -105,7 +100,6 @@ async function receiveWebhook(req, res, db, io) {
       is_suspicious,
     });
 
-    // ── Step 6: Act (fire and forget) ─────────────────────────────────────────
     // Skip Squad API calls for demo transactions — demo refs don't exist in
     // Squad's system, so verifyTransaction / refundTransaction will always 500.
     if (!isDemo) {
@@ -124,7 +118,6 @@ async function receiveWebhook(req, res, db, io) {
       sendFraudAlert({ ref: transaction_ref, email, amount, score, tier, reasons, bin_info, card_bin, timestamp: transaction_date }).catch(console.error);
     }
 
-    // ── Step 7: Push to dashboard ─────────────────────────────────────────────
     console.log(`[Webhook] Scored: ref=${transaction_ref} score=${score} tier=${tier}`);
     io.emit('new_transaction', {
       ref:          transaction_ref,
@@ -141,7 +134,6 @@ async function receiveWebhook(req, res, db, io) {
       source:       isDemo ? 'demo' : 'real',
     });
 
-    // ── Step 8: Acknowledge ───────────────────────────────────────────────────
     return res.status(200).json({ message: 'Received' });
   } catch (err) {
     console.error('[Webhook] receiveWebhook error:', err.message);

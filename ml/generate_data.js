@@ -5,7 +5,6 @@ function rand(min, max)    { return Math.random() * (max - min) + min; }
 function randInt(min, max) { return Math.floor(rand(min, max + 1)); }
 function r2(n)             { return Math.round(n * 100) / 100; }
 
-// ── Normal transaction ─────────────────────────────────────────────────────────
 // Typical Nigerian e-commerce customer: regular hours, moderate amounts,
 // low velocity, almost never reuses a BIN across multiple emails.
 function normalTransaction() {
@@ -20,7 +19,6 @@ function normalTransaction() {
   };
 }
 
-// ── Fraud transaction — 5 distinct attack patterns ─────────────────────────────
 function fraudTransaction() {
   const pattern = Math.random();
 
@@ -93,7 +91,6 @@ function fraudTransaction() {
   };
 }
 
-// ── Build dataset ─────────────────────────────────────────────────────────────
 // Larger dataset = better decision boundaries.
 // 80/20 normal/fraud ratio is realistic for Nigerian e-commerce.
 const NORMAL_COUNT = 800;
@@ -109,7 +106,6 @@ for (let i = rows.length - 1; i > 0; i--) {
   [rows[i], rows[j]] = [rows[j], rows[i]];
 }
 
-// ── Write CSV ─────────────────────────────────────────────────────────────────
 const HEADER = 'amount,hour,is_first_time,velocity,bin_count,amount_vs_avg,label';
 const lines  = [
   HEADER,
@@ -121,7 +117,6 @@ const lines  = [
 const outPath = path.join(__dirname, 'training_data.csv');
 fs.writeFileSync(outPath, lines.join('\n'), 'utf8');
 
-// ── Summary ───────────────────────────────────────────────────────────────────
 const fraudByPattern = {
   A_highvalue: rows.filter(r => r.label === 1 && r.velocity >= 3 && r.hour <= 4).length,
   B_binstuff:  rows.filter(r => r.label === 1 && r.bin_count >= 6).length,
