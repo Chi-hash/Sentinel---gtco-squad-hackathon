@@ -220,8 +220,11 @@ sentinel/
 │   └── db/
 │       └── database.js
 ├── frontend/
+│   └── assets/
+│       └── favicon.png
 │   ├── index.html
 │   ├── style.css
+|   ├── simulate.js
 │   └── script.js
 ├── demo/
 │   └── simulate.js
