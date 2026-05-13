@@ -136,7 +136,7 @@ function simulateGreen() {
 }
 
 function simulateAmber() {
-  name:             _nameFromEmail(email),
+  const email = _amberEmail();
   _post({
     transaction_ref:  _ref(),
     amount:           _pick(AMOUNTS_AMBER),
@@ -156,5 +156,6 @@ function simulateRed() {
     name:             _nameFromEmail(email),  
     card_bin:         _pick(BINS_RED),
     transaction_date: new Date().toISOString(),
+    is_suspicious:    Math.random() < 0.3, // 30% chance Squad flags it too
   });
 }

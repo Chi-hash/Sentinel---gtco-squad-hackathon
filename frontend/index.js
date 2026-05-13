@@ -621,7 +621,7 @@ function showToast(t) {
   const el = document.createElement("div");
   const cls =
     t.tier === "RED" ? "toast-r" : t.tier === "AMBER" ? "toast-a" : "toast-g";
-  const icon = t.tier === "RED" ? "🚫" : t.tier === "AMBER" ? "⚠️" : "✅";
+  const icon = "";
   const lbl =
     t.tier === "RED" ? "BLOCKED" : t.tier === "AMBER" ? "FLAGGED" : "APPROVED";
   el.className = `toast ${cls}`;
@@ -642,8 +642,8 @@ function openModal(ref) {
   const col = scCol(t.score);
   const mtag =
     t.model_trained !== false
-      ? `<span class="m-tag on">● AI MODEL ACTIVE</span>`
-      : `<span class="m-tag off">◌ LEARNING MODE</span>`;
+      ? `<span class="m-tag on">AI MODEL ACTIVE</span>`
+      : `<span class="m-tag off">LEARNING MODE</span>`;
 
   const reasons = (t.codes || []).length
     ? (t.codes || [])
@@ -673,8 +673,8 @@ function openModal(ref) {
     t.tier === "GREEN"
       ? `<button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`
            : t.tier === "AMBER"
-        ? `<button class="mb mb-ok" onclick="approveIt('${t.ref}')">✓ APPROVE</button><button class="mb mb-fl" onclick="partialRefundModal('${t.ref}', ${t.amount})">↩ PARTIAL REFUND</button><button class="mb mb-fl" onclick="closeModal()">⚑ FLAG</button><button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`
-               : `<button class="mb mb-rf" onclick="closeModal()">↩ REFUND</button><button class="mb mb-fl" onclick="cancelTokenModal('${t.ref}')">CANCEL CARD TOKEN</button><button class="mb mb-dp" onclick="disputeModal('${t.ref}')">⚖ FIGHT DISPUTE</button><button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`;
+        ? `<button class="mb mb-ok" onclick="approveIt('${t.ref}')">APPROVE</button><button class="mb mb-fl" onclick="partialRefundModal('${t.ref}', ${t.amount})">PARTIAL REFUND</button><button class="mb mb-fl" onclick="closeModal()">FLAG</button><button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`
+               : `<button class="mb mb-rf" onclick="closeModal()">REFUND</button><button class="mb mb-fl" onclick="cancelTokenModal('${t.ref}')">CANCEL CARD TOKEN</button><button class="mb mb-dp" onclick="disputeModal('${t.ref}')">FIGHT DISPUTE</button><button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`;
 
   document.getElementById("modal-mount").innerHTML = `
     <div class="modal-overlay" onclick="closeModal()">
@@ -720,10 +720,10 @@ function openModal(ref) {
                 <span class="si-val">${t.score}/100 — ${t.tier}</span>
               </div>
               <div class="si-combined">
-                ${t.tier === 'RED' && t.is_suspicious ? '🚨 DUAL CONFIRMED FRAUD' :
-                  (t.tier === 'RED' || t.tier === 'AMBER') && !t.is_suspicious ? '⚠️ SENTINEL CAUGHT IT' :
-                  t.tier === 'GREEN' && t.is_suspicious ? '⚠️ SQUAD FLAGGED IT' :
-                  '✅ BOTH CLEAR'}
+                ${t.tier === 'RED' && t.is_suspicious ? 'DUAL CONFIRMED FRAUD' :
+                  (t.tier === 'RED' || t.tier === 'AMBER') && !t.is_suspicious ? 'SENTINEL CAUGHT IT' :
+                  t.tier === 'GREEN' && t.is_suspicious ? 'SQUAD FLAGGED IT' :
+                  'BOTH CLEAR'}
               </div>
             </div></div>
             <div><div class="m-sec-lbl">Risk Signals</div>${reasons}</div>
@@ -1357,7 +1357,7 @@ function saveSettings() {
   toggleSettings();
   const el = document.createElement("div");
   el.className = "toast toast-g";
-  el.innerHTML = `<span class="t-icon">✅</span><div class="t-body"><strong>SAVED</strong><br/>Settings updated successfully</div>`;
+  el.innerHTML = `<span class="t-icon"></span><div class="t-body"><strong>SAVED</strong><br/>Settings updated successfully</div>`;
   document.getElementById("toasts").appendChild(el);
   setTimeout(() => el.remove(), 2500);
 }
