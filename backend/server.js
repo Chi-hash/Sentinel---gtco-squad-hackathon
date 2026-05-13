@@ -8,6 +8,7 @@ const db        = require('./db/database');
 const { receiveWebhook } = require('./webhook/receiver');
 const squadApi  = require('./squad-client/api');
 const binLookup = require('./bin-lookup');
+const scorer    = require('./ai-engine/scorer');
 
 // ── Global safety net — prevents any single unhandled error from killing the process ──
 process.on('uncaughtException',  (err) => console.error('[Sentinel] uncaughtException:', err.message));
@@ -40,11 +41,17 @@ app.use(express.json());
 
 app.get('/api/transactions', async (req, res) => {
   try {
-    // ?source=real  → verified merchants (real transactions only)
+    // ?source=real  → verified merchants: real webhook + historical imports
     // ?source=demo  → demo transactions only
     // (no param)    → all transactions
     const { source } = req.query;
-    const transactions = await db.getAllTransactions(source || null);
+
+    // 'real' should include 'historical' — both are actual merchant data,
+    // historical is just pre-imported rather than received via webhook.
+    const transactions = source === 'real'
+      ? await db.getRealAndHistoricalTransactions()
+      : await db.getAllTransactions(source || null);
+
     res.json(transactions);
   } catch (err) {
     console.error('[API] /api/transactions error:', err.message);
@@ -102,6 +109,105 @@ app.post('/api/disputes/:ref/submit', async (req, res) => {
     res.json(result || { message: 'Submitted' });
   } catch (err) {
     console.error('[API] POST /api/disputes submit error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Historical import — pulls last N days from Squad, scores each, saves to DB.
+// Returns a summary: { imported, skipped, flagged, blocked }.
+app.post('/api/history/import', async (req, res) => {
+  try {
+    const days = Number(req.query.days) || 30;
+    console.log(`[History] Fetching last ${days} days from Squad...`);
+    const rawList = await squadApi.getTransactionHistory(days);
+    console.log(`[History] Squad returned ${rawList.length} transactions`);
+
+    let imported = 0, skipped = 0, flagged = 0, blocked = 0;
+
+    for (const raw of rawList) {
+      // Normalise field names — Squad uses snake_case but names vary
+      const transaction_ref = raw.transaction_ref || raw.transactionRef || raw.id;
+      if (!transaction_ref) { skipped++; continue; }
+
+      // Deduplicate — skip if already in our DB
+      if (await db.transactionExists(transaction_ref)) { skipped++; continue; }
+
+      const amount          = raw.amount || 0;
+      const email           = raw.email || raw.customer_email || '';
+      const card_bin        = raw.card_bin || raw.payment_information?.card_bin
+                           || raw.payment_information?.first_6digits || '';
+      const transaction_date = raw.created_at || raw.transaction_date || new Date().toISOString();
+      const is_suspicious   = raw.is_suspicious === true;
+
+      // BIN enrichment
+      const bin_info = binLookup.lookupBin(card_bin);
+
+      // Score through Sentinel's AI engine
+      const { score, tier, reasons, features } = scorer.scoreTransaction(
+        { amount, email, card_bin, timestamp: transaction_date, bin_info },
+        db
+      );
+
+      const action_taken = tier === 'GREEN' ? 'approved' : tier === 'AMBER' ? 'flagged' : 'refunded';
+
+      await db.saveTransaction({
+        ref: transaction_ref,
+        email,
+        amount,
+        card_bin,
+        bin_info,
+        score,
+        tier,
+        reasons,
+        features,
+        timestamp:    transaction_date,
+        action_taken,
+        source:       'historical',
+        is_suspicious,
+      });
+
+      imported++;
+      if (tier === 'AMBER') flagged++;
+      if (tier === 'RED')   blocked++;
+    }
+
+    console.log(`[History] Done — imported=${imported} skipped=${skipped} flagged=${flagged} blocked=${blocked}`);
+    res.json({ imported, skipped, flagged, blocked, days });
+  } catch (err) {
+    console.error('[History] import error:', err.message);
+    res.status(500).json({ error: 'Historical import failed', detail: err.message });
+  }
+});
+
+// Partial refund — AMBER smart response, refund only part of the transaction.
+app.post('/api/transactions/:ref/partial-refund', async (req, res) => {
+  try {
+    const { ref } = req.params;
+    const { amount } = req.body; // amount in kobo
+    if (!amount || isNaN(Number(amount)))
+      return res.status(400).json({ error: 'amount (kobo) is required' });
+
+    const result = await squadApi.partialRefundTransaction(ref, Number(amount));
+    // Update status in DB
+    db.updateTransactionStatus(ref, 'partial-refunded', 'AMBER');
+    console.log(`[API] Partial refund for ${ref} — amount=${amount}`);
+    res.json(result || { message: 'Partial refund submitted' });
+  } catch (err) {
+    console.error('[API] partial-refund error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Cancel recurring card token — RED proactive block, gated by frontend confirmation.
+app.patch('/api/transactions/:ref/cancel-token', async (req, res) => {
+  try {
+    const { ref } = req.params;
+    const { token_ref } = req.body; // the token identifier from Squad
+    const result = await squadApi.cancelRecurringToken(token_ref || ref);
+    console.log(`[API] Token cancelled for txn=${ref}`);
+    res.json(result || { message: 'Token cancelled' });
+  } catch (err) {
+    console.error('[API] cancel-token error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });

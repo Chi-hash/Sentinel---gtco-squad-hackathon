@@ -36,7 +36,7 @@ async function receiveWebhook(req, res, db, io) {
 
     // Squad real webhook:  { Event, TransactionRef, Body: {...} }
     // Demo/simulate:       { event, data: { transaction_ref, amount, ... } }
-    let transaction_ref, amount, email, card_bin, transaction_date;
+    let transaction_ref, amount, email, card_bin, transaction_date, is_suspicious;
 
     if (payload.Body) {
       // Real Squad webhook format: { Event, TransactionRef, Body }
@@ -49,7 +49,8 @@ async function receiveWebhook(req, res, db, io) {
                       || b.payment_information?.cardBin
                       || '';
       transaction_date = b.created_at || new Date().toISOString();
-      console.log(`[Webhook] Squad txn: ref=${transaction_ref} amount=${amount} email=${email} card_bin=${card_bin}`);
+      is_suspicious    = b.is_suspicious === true || payload.is_suspicious === true || false;
+      console.log(`[Webhook] Squad txn: ref=${transaction_ref} amount=${amount} email=${email} card_bin=${card_bin} is_suspicious=${is_suspicious}`);
     } else if (payload.data) {
       // Demo / simulate format
       const d = payload.data;
@@ -58,6 +59,7 @@ async function receiveWebhook(req, res, db, io) {
       email             = d.email;
       card_bin          = d.card_bin;
       transaction_date  = d.transaction_date;
+      is_suspicious     = d.is_suspicious || false;
     } else {
       console.error('[Webhook] Unknown payload structure:', JSON.stringify(payload).slice(0, 200));
       return res.status(400).json({ error: 'Unknown payload structure' });
@@ -88,7 +90,7 @@ async function receiveWebhook(req, res, db, io) {
       tier === 'GREEN' ? 'approved' : tier === 'AMBER' ? 'flagged' : 'refunded';
 
     await db.saveTransaction({
-      ref:         transaction_ref,
+      ref:          transaction_ref,
       email,
       amount,
       card_bin,
@@ -97,25 +99,35 @@ async function receiveWebhook(req, res, db, io) {
       tier,
       reasons,
       features,
-      timestamp:   transaction_date,
+      timestamp:    transaction_date,
       action_taken,
-      source:      isDemo ? 'demo' : 'real',
+      source:       isDemo ? 'demo' : 'real',
+      is_suspicious,
     });
 
     // ── Step 6: Act (fire and forget) ─────────────────────────────────────────
+    // Skip Squad API calls for demo transactions — demo refs don't exist in
+    // Squad's system, so verifyTransaction / refundTransaction will always 500.
+    if (!isDemo) {
+      if (tier === 'AMBER') {
+        squadApi.verifyTransaction(transaction_ref).catch(console.error);
+      }
+      if (tier === 'RED') {
+        squadApi.refundTransaction(transaction_ref, amount).catch(console.error);
+      }
+    }
+    // Alerts fire regardless of demo/real mode
     if (tier === 'AMBER') {
-      squadApi.verifyTransaction(transaction_ref).catch(console.error);
       trackAmberAndAlert({ ref: transaction_ref, email, amount, score, reasons, bin_info, timestamp: transaction_date }).catch(console.error);
     }
     if (tier === 'RED') {
-      squadApi.refundTransaction(transaction_ref, amount).catch(console.error);
       sendFraudAlert({ ref: transaction_ref, email, amount, score, tier, reasons, bin_info, card_bin, timestamp: transaction_date }).catch(console.error);
     }
 
     // ── Step 7: Push to dashboard ─────────────────────────────────────────────
     console.log(`[Webhook] Scored: ref=${transaction_ref} score=${score} tier=${tier}`);
     io.emit('new_transaction', {
-      ref:      transaction_ref,
+      ref:          transaction_ref,
       email,
       amount,
       card_bin,
@@ -124,8 +136,9 @@ async function receiveWebhook(req, res, db, io) {
       tier,
       reasons,
       features,
-      timestamp: transaction_date,
-      source:   isDemo ? 'demo' : 'real',
+      is_suspicious,
+      timestamp:    transaction_date,
+      source:       isDemo ? 'demo' : 'real',
     });
 
     // ── Step 8: Acknowledge ───────────────────────────────────────────────────

@@ -42,6 +42,64 @@ async function refundTransaction(transactionRef, amount) {
   }
 }
 
+// Pull up to `days` days of transaction history from Squad.
+// Returns an array of raw Squad transaction objects (each includes is_suspicious).
+async function getTransactionHistory(days = 30) {
+  try {
+    const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 10); // YYYY-MM-DD
+    const { data } = await axios.get(
+      `${getBaseUrl()}/transaction`,
+      {
+        headers: authHeaders(),
+        params: { start_date: startDate, limit: 200, page: 1 },
+        timeout: 15000,
+      }
+    );
+    // Squad returns { status: 200, data: { transactions: [...] } } or similar
+    const list =
+      data?.data?.transactions ||
+      data?.data            ||
+      data?.transactions    ||
+      [];
+    return Array.isArray(list) ? list : [];
+  } catch (err) {
+    console.error('[Squad] getTransactionHistory error:', err.message);
+    return [];
+  }
+}
+
+// Partial refund — amount should be in kobo, same unit as original transaction.
+async function partialRefundTransaction(transactionRef, amount) {
+  try {
+    const { data } = await axios.post(
+      `${getBaseUrl()}/transaction/refund`,
+      { transaction_ref: transactionRef, refund_type: 'Partial', amount },
+      { headers: authHeaders() }
+    );
+    return data;
+  } catch (err) {
+    console.error('[Squad] partialRefundTransaction error:', err.message);
+    return null;
+  }
+}
+
+// Cancel a stored recurring card token to block future charges.
+async function cancelRecurringToken(tokenRef) {
+  try {
+    const { data } = await axios.patch(
+      `${getBaseUrl()}/transaction/cancel/recurring`,
+      { token_ref: tokenRef },
+      { headers: authHeaders() }
+    );
+    return data;
+  } catch (err) {
+    console.error('[Squad] cancelRecurringToken error:', err.message);
+    return null;
+  }
+}
+
 // Called by the dashboard to pull the current chargeback / dispute history.
 async function getDisputes() {
   try {
@@ -102,4 +160,13 @@ async function verifyMerchantKey(apiKey) {
   }
 }
 
-module.exports = { verifyTransaction, refundTransaction, getDisputes, challengeDispute, verifyMerchantKey };
+module.exports = {
+  verifyTransaction,
+  refundTransaction,
+  getDisputes,
+  challengeDispute,
+  verifyMerchantKey,
+  getTransactionHistory,
+  partialRefundTransaction,
+  cancelRecurringToken,
+};

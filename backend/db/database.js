@@ -25,6 +25,7 @@ function initDB() {
   try { db.exec('ALTER TABLE transactions ADD COLUMN features TEXT'); } catch (_) {}
   try { db.exec('ALTER TABLE transactions ADD COLUMN bin_info TEXT'); } catch (_) {}
   try { db.exec('ALTER TABLE transactions ADD COLUMN source TEXT DEFAULT "real"'); } catch (_) {}
+  try { db.exec('ALTER TABLE transactions ADD COLUMN is_suspicious INTEGER DEFAULT 0'); } catch (_) {}
   console.log('Database ready.');
 }
 
@@ -32,16 +33,17 @@ function initDB() {
 function saveTransaction(txn) {
   const stmt = db.prepare(`
     INSERT OR IGNORE INTO transactions
-      (ref, email, amount, card_bin, bin_info, score, tier, reasons, features, timestamp, action_taken, source)
+      (ref, email, amount, card_bin, bin_info, score, tier, reasons, features, timestamp, action_taken, source, is_suspicious)
     VALUES
-      (@ref, @email, @amount, @card_bin, @bin_info, @score, @tier, @reasons, @features, @timestamp, @action_taken, @source)
+      (@ref, @email, @amount, @card_bin, @bin_info, @score, @tier, @reasons, @features, @timestamp, @action_taken, @source, @is_suspicious)
   `);
   stmt.run({
     ...txn,
-    bin_info: JSON.stringify(txn.bin_info || null),
-    reasons:  JSON.stringify(txn.reasons  || []),
-    features: JSON.stringify(txn.features || {}),
-    source:   txn.source || 'real',
+    bin_info:      JSON.stringify(txn.bin_info || null),
+    reasons:       JSON.stringify(txn.reasons  || []),
+    features:      JSON.stringify(txn.features || {}),
+    source:        txn.source        || 'real',
+    is_suspicious: txn.is_suspicious ? 1 : 0,
   });
 }
 
@@ -85,9 +87,25 @@ function getAllTransactions(source) {
     .all(...params)
     .map(r => ({
       ...r,
-      bin_info: JSON.parse(r.bin_info || 'null'),
-      reasons:  JSON.parse(r.reasons  || '[]'),
-      features: JSON.parse(r.features || '{}'),
+      bin_info:      JSON.parse(r.bin_info || 'null'),
+      reasons:       JSON.parse(r.reasons  || '[]'),
+      features:      JSON.parse(r.features || '{}'),
+      is_suspicious: r.is_suspicious === 1,
+    }));
+}
+
+// Returns both real webhook transactions AND historical imports for verified merchants.
+function getRealAndHistoricalTransactions() {
+  return db.prepare(
+    "SELECT * FROM transactions WHERE source IN ('real', 'historical') ORDER BY id DESC LIMIT 200"
+  )
+    .all()
+    .map(r => ({
+      ...r,
+      bin_info:      JSON.parse(r.bin_info || 'null'),
+      reasons:       JSON.parse(r.reasons  || '[]'),
+      features:      JSON.parse(r.features || '{}'),
+      is_suspicious: r.is_suspicious === 1,
     }));
 }
 
@@ -105,5 +123,6 @@ module.exports = {
   getRecentByBin,
   getUserHistory,
   getAllTransactions,
+  getRealAndHistoricalTransactions,
   getMerchantAverage,
 };
