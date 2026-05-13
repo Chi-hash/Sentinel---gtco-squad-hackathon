@@ -468,6 +468,10 @@ function buildRow(t, anim) {
     });
   };
 
+  const squadIntel = t.is_suspicious
+    ? `<span style="display:inline-block; white-space:nowrap; font-size:10px; padding:4px 6px; background:var(--amber-dim); color:var(--amber); border:1px solid rgba(240,165,0,0.3); border-radius:4px; font-weight:600;">Squad Flagged</span>`
+    : `<span style="font-size:10px; color:var(--t3); font-family:var(--ff-mono);">Cleared</span>`;
+
   return `<tr class="${rowCls(t.tier)} ${anim ? "slide-in" : ""}" onclick="openModal('${t.ref}')">
     <td class="tc-date">${fmtDate(t.timestamp)}</td> 
     <td class="tc-time">${t.time || fmtTime(t.timestamp)}${t.source === "historical" ? ' <span class="badge-hist">HIST</span>' : ""}</td>
@@ -480,6 +484,7 @@ function buildRow(t, anim) {
         <div class="sc-track"><div class="sc-fill" style="width:${t.score}%;background:${scCol(t.score)}"></div></div>
       </div>
     </td>
+    <td>${squadIntel}</td>
     <td>${codes}</td>
     <td>${status}</td>
     <td>${action}</td>
