@@ -3155,3 +3155,114 @@ body {
 .merchant-demo {
   color: var(--amber) !important;
 }
+/* Squad Intelligence modal section */
+.squad-intel-box {
+  background: var(--bg3);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.si-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.si-label {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.si-val {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  font-weight: 500;
+}
+.si-combined {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.badge-dual {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  font-weight: 600;
+  background: var(--crimson-dim);
+  color: var(--crimson);
+  border: 1px solid rgba(255, 71, 87, 0.3);
+  animation: pulse-crimson 2s infinite;
+}
+@keyframes pulse-crimson {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+.badge-sentinel-only,
+.badge-squad-only {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  font-weight: 500;
+  background: var(--amber-dim);
+  color: var(--amber);
+  border: 1px solid rgba(240, 165, 0, 0.3);
+  margin-left: 6px;
+}
+.badge-hist {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: var(--ff-mono);
+  font-size: 8px;
+  font-weight: 500;
+  background: rgba(148, 163, 184, 0.1);
+  color: var(--t3);
+  border: 1px solid var(--line2);
+  margin-left: 6px;
+}
+
+.st-pr {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--amber);
+}
+
+.import-banner {
+  width: 100%;
+  padding: 12px 22px;
+  background: var(--teal-dim);
+  border-bottom: 1px solid rgba(0, 212, 180, 0.2);
+  color: var(--teal);
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  animation: slideDown 0.3s ease;
+}
+.import-banner:hover {
+  background: rgba(0, 212, 180, 0.15);
+}

@@ -10,7 +10,7 @@ const S = {
   sidebarOpen: true,
 };
 
-const SEED = []
+const SEED = [];
 const SEED_DSP = [];
 
 const RSN = {
@@ -29,9 +29,11 @@ const RSN = {
   BEHAVIOUR_MISMATCH: "Sudden jump from habitual amounts",
   HIGH_VALUE_NEW: "First-timer with very high payment",
   SCORING_ERROR: "Fallback score engine error",
-  FOREIGN_CARD:  'Card issued outside Nigeria may be legitimate',
-  PREPAID_CARD:  'Prepaid card elevated chargeback risk',
-  UNKNOWN_BIN:   'Card BIN not in known issuer database',
+  FOREIGN_CARD: "Card issued outside Nigeria may be legitimate",
+  PREPAID_CARD: "Prepaid card elevated chargeback risk",
+  UNKNOWN_BIN: "Card BIN not in known issuer database",
+  SQUAD_SUSPICIOUS:
+    "Squad's own risk engine independently flagged this transaction",
 };
 
 //BOOT
@@ -43,7 +45,7 @@ function _initDashboard() {
   S.transactions = [...SEED];
   S.disputes = [...SEED_DSP];
   renderFeed();
-  buildTagCloud(); 
+  buildTagCloud();
   renderDisputes();
   syncKPIs();
   S.transactions.forEach((t) => {
@@ -56,21 +58,31 @@ function _initDashboard() {
   // Only auto-start demo simulation if this is a demo session.
   // Verified Squad merchants use real webhook data — hide the demo ribbon.
   const stored = localStorage.getItem(STORAGE_KEY);
-  const merchantInfo = stored ? (() => { try { return JSON.parse(stored); } catch { return null; } })() : null;
-  const isDemo = !merchantInfo || merchantInfo.environment === 'demo';
+  const merchantInfo = stored
+    ? (() => {
+        try {
+          return JSON.parse(stored);
+        } catch {
+          return null;
+        }
+      })()
+    : null;
+  const isDemo = !merchantInfo || merchantInfo.environment === "demo";
 
   S.demoMode = isDemo;
-  const ribbon = document.getElementById('demo-ribbon');
-  if (ribbon) ribbon.style.display = isDemo ? 'flex' : 'none';
-  const simPanel = document.querySelector('.sim-panel');
-  if (simPanel) simPanel.style.display = isDemo ? '' : 'none';
+  const ribbon = document.getElementById("demo-ribbon");
+  if (ribbon) ribbon.style.display = isDemo ? "flex" : "none";
+  const simPanel = document.querySelector(".sim-panel");
+  if (simPanel) simPanel.style.display = isDemo ? "" : "none";
   if (isDemo) startDemo();
 
   hydrateFromDB();
 }
 
 function hydrateFromDB() {
-  const url = S.demoMode ? "/api/transactions" : "/api/transactions?source=real";
+  const url = S.demoMode
+    ? "/api/transactions"
+    : "/api/transactions?source=real";
   fetch(url)
     .then((r) => r.json())
     .then((rows) => {
@@ -88,14 +100,21 @@ function hydrateFromDB() {
           reasons: r.reasons || [],
           features: r.features || {},
           status:
-            r.action_taken === "refunded" ? "blocked"
-            : r.action_taken ||
-              (r.tier === "GREEN" ? "approved" : r.tier === "AMBER" ? "flagged" : "blocked"),
+            r.action_taken === "refunded"
+              ? "blocked"
+              : r.action_taken ||
+                (r.tier === "GREEN"
+                  ? "approved"
+                  : r.tier === "AMBER"
+                    ? "flagged"
+                    : "blocked"),
           time: fmtTime(r.timestamp),
           timestamp: r.timestamp,
           model_trained: true,
           _notifRead: r.tier !== "RED",
           bin_info: r.bin_info || null,
+          is_suspicious: r.is_suspicious || false,
+          source: r.source || "real",
         };
         S.transactions.push(t);
         S.total++;
@@ -113,7 +132,7 @@ function hydrateFromDB() {
         updateNotifBadge();
         buildTagCloud();
         // Show the most recent transaction's time in the header
-        const newest = S.transactions.find(t => t.time || t.timestamp);
+        const newest = S.transactions.find((t) => t.time || t.timestamp);
         if (newest) {
           document.getElementById("last-time").textContent =
             newest.time || fmtTime(newest.timestamp);
@@ -122,7 +141,6 @@ function hydrateFromDB() {
     })
     .catch(() => {});
 }
-
 
 //SIDEBAR TOGGLE
 function toggleSidebar() {
@@ -244,8 +262,8 @@ function sigClass(code) {
     "ML_HIGH_RISK",
     "ROUND_AMOUNT",
     "UNKNOWN_BIN",
-    "FOREIGN_CARD"
-
+    "FOREIGN_CARD",
+    "SQUAD_SUSPICIOUS",
   ];
   const warning = [
     "AMOUNT_SPIKE",
@@ -270,7 +288,7 @@ function emailToName(email) {
   const local = email.split("@")[0];
   return local
     .replace(/[._0-9]/g, " ")
-    .replace(/\b\w/g, c => c.toUpperCase())
+    .replace(/\b\w/g, (c) => c.toUpperCase())
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -287,7 +305,8 @@ function renderFeed() {
 //FILTER ENGINE
 
 function filterFeed() {
-  const q = document.getElementById("email-search")?.value.trim().toLowerCase() || "";
+  const q =
+    document.getElementById("email-search")?.value.trim().toLowerCase() || "";
   const clearBtn = document.getElementById("search-clear");
   if (clearBtn) clearBtn.style.display = q ? "block" : "none";
 
@@ -300,31 +319,45 @@ function applyFilter(q) {
 
   rows.forEach((row) => {
     // Column layout: 1=Date 2=Time 3=Amount 4=Customer 5=Card 6=AIScore 7=Tier 8=Signals 9=Status 10=Action
-    const emailCell   = row.querySelector(".tc-email");
-    const cardCell    = row.querySelector(".tc-card");
-    const amtCell     = row.querySelector(".tc-amt");
-    const tierCell    = row.querySelector("td:nth-child(7) .pill");
+    const emailCell = row.querySelector(".tc-email");
+    const cardCell = row.querySelector(".tc-card");
+    const amtCell = row.querySelector(".tc-amt");
+    const tierCell = row.querySelector("td:nth-child(7) .pill");
     const signalsCell = row.querySelector("td:nth-child(8)");
-    const statusCell  = row.querySelector("td:nth-child(9)");
-    const emailMatch = emailCell && (
-      emailCell.textContent.toLowerCase().includes(q) ||
-      (emailCell.dataset.email && emailCell.dataset.email.toLowerCase().includes(q))
-    );
-    const cardMatch   = cardCell   && cardCell.textContent.toLowerCase().includes(q);
-    const amtMatch    = amtCell    && amtCell.textContent.toLowerCase().includes(q);
-    const tierMatch   = tierCell   && tierCell.textContent.toLowerCase().includes(q);
-    const statusMatch = statusCell && statusCell.textContent.toLowerCase().includes(q);
+    const statusCell = row.querySelector("td:nth-child(9)");
+    const emailMatch =
+      emailCell &&
+      (emailCell.textContent.toLowerCase().includes(q) ||
+        (emailCell.dataset.email &&
+          emailCell.dataset.email.toLowerCase().includes(q)));
+    const cardMatch =
+      cardCell && cardCell.textContent.toLowerCase().includes(q);
+    const amtMatch = amtCell && amtCell.textContent.toLowerCase().includes(q);
+    const tierMatch =
+      tierCell && tierCell.textContent.toLowerCase().includes(q);
+    const statusMatch =
+      statusCell && statusCell.textContent.toLowerCase().includes(q);
 
     let signalMatch = false;
     if (signalsCell) {
-      signalMatch = Array.from(signalsCell.querySelectorAll(".sig"))
-        .some(s => s.textContent.toLowerCase().includes(q));
+      signalMatch = Array.from(signalsCell.querySelectorAll(".sig")).some((s) =>
+        s.textContent.toLowerCase().includes(q),
+      );
     }
 
     // Tag filter — independent of search text, matches status cell
-    const tagMatch = !_activeTag || (statusCell && statusCell.textContent.toLowerCase().includes(_activeTag));
+    const tagMatch =
+      !_activeTag ||
+      (statusCell && statusCell.textContent.toLowerCase().includes(_activeTag));
     // Text filter — applies within the tag-filtered set
-    const textMatch = !q || emailMatch || cardMatch || amtMatch || tierMatch || signalMatch || statusMatch;
+    const textMatch =
+      !q ||
+      emailMatch ||
+      cardMatch ||
+      amtMatch ||
+      tierMatch ||
+      signalMatch ||
+      statusMatch;
 
     const match = tagMatch && textMatch;
     row.style.display = match ? "" : "none";
@@ -332,7 +365,8 @@ function applyFilter(q) {
   });
 
   const meta = document.getElementById("feed-meta");
-  if (meta) meta.textContent = `${visible} transaction${visible !== 1 ? "s" : ""}`;
+  if (meta)
+    meta.textContent = `${visible} transaction${visible !== 1 ? "s" : ""}`;
 
   // Keep the active-filters pill hidden — tag buttons show their own active state
   const afContainer = document.getElementById("active-filters");
@@ -349,14 +383,17 @@ function clearEmailSearch() {
 
 function clearActiveFilter() {
   _activeTag = null;
-  document.querySelectorAll(".tag-chip").forEach(c => c.classList.remove("active"));
+  document
+    .querySelectorAll(".tag-chip")
+    .forEach((c) => c.classList.remove("active"));
   clearEmailSearch();
 }
 
 const POPULAR_TAGS = [
-  { label: "approved", color: "jade"    },
-  { label: "flagged",  color: "amber"   },
-  { label: "blocked",  color: "crimson" },
+  { label: "approved", color: "jade" },
+  { label: "flagged", color: "amber" },
+  { label: "blocked", color: "crimson" },
+  { label: "partial-refunded", color: "amber" },
 ];
 
 let _activeTag = null;
@@ -366,15 +403,15 @@ function buildTagCloud() {
   if (!container) return;
 
   const counts = { approved: 0, flagged: 0, blocked: 0 };
-  S.transactions.forEach(t => {
+  S.transactions.forEach((t) => {
     if (t.status && counts[t.status] !== undefined) counts[t.status]++;
   });
 
-  const tagsHtml = POPULAR_TAGS.map(tag => {
+  const tagsHtml = POPULAR_TAGS.map((tag) => {
     const count = counts[tag.label] || 0;
     if (count === 0) return "";
     const isActive = _activeTag === tag.label;
-    return `<button class="tag-chip tag-${tag.color}${isActive ? ' active' : ''}" data-tag="${tag.label}" onclick="clickTag('${tag.label}', this)">${tag.label} <span class="tag-count">${count}</span></button>`;
+    return `<button class="tag-chip tag-${tag.color}${isActive ? " active" : ""}" data-tag="${tag.label}" onclick="clickTag('${tag.label}', this)">${tag.label} <span class="tag-count">${count}</span></button>`;
   }).join("");
 
   container.innerHTML = `<span class="tag-cloud-label">Quick filters:</span>${tagsHtml || '<span style="color:var(--t3);font-size:11px">No transactions yet</span>'}`;
@@ -383,13 +420,18 @@ function buildTagCloud() {
 function clickTag(tag, btn) {
   if (btn.classList.contains("active")) {
     _activeTag = null;
-    document.querySelectorAll(".tag-chip").forEach(c => c.classList.remove("active"));
+    document
+      .querySelectorAll(".tag-chip")
+      .forEach((c) => c.classList.remove("active"));
   } else {
     _activeTag = tag.toLowerCase();
-    document.querySelectorAll(".tag-chip").forEach(c => c.classList.remove("active"));
+    document
+      .querySelectorAll(".tag-chip")
+      .forEach((c) => c.classList.remove("active"));
     btn.classList.add("active");
   }
-  const q = document.getElementById("email-search")?.value.trim().toLowerCase() || "";
+  const q =
+    document.getElementById("email-search")?.value.trim().toLowerCase() || "";
   applyFilter(q);
 }
 
@@ -397,19 +439,19 @@ function refreshTagCloud() {
   buildTagCloud();
 }
 
-
-
 function buildRow(t, anim) {
   const codes = (t.codes || []).length
     ? (t.codes || []).map((c) => `<span class="sig ${sigClass(c)}">${c}</span>`)
     : `<span style="color:var(--t3);font-family:var(--ff-mono);font-size:10px">—</span>`;
 
-  const status =
+     const status =
     t.status === "approved"
       ? `<span class="st-ok"><span>●</span><span>APPROVED</span></span>`
       : t.status === "flagged"
         ? `<span class="st-fl"><span>◆</span><span>FLAGGED</span></span>`
-        : `<span class="st-blk"><span>■</span><span>BLOCKED</span></span>`;
+        : t.status === "partial-refunded"
+          ? `<span class="st-pr"><span>↩</span><span>PARTIAL REFUND</span></span>`
+          : `<span class="st-blk"><span>■</span><span>BLOCKED</span></span>${t.token_cancelled ? ' <span style="font-size:10px">🔒</span>' : ''}`; 
 
   const action =
     t.tier === "AMBER" && t.status === "flagged"
@@ -418,23 +460,27 @@ function buildRow(t, anim) {
   const fmtDate = (iso) => {
     if (!iso) return "—";
     const d = new Date(iso);
-    return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+    return d.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
   };
-
 
   return `<tr class="${rowCls(t.tier)} ${anim ? "slide-in" : ""}" onclick="openModal('${t.ref}')">
     <td class="tc-date">${fmtDate(t.timestamp)}</td> 
-    <td class="tc-time">${t.time || fmtTime(t.timestamp)}</td>
+    <td class="tc-time">${t.time || fmtTime(t.timestamp)}${t.source === "historical" ? ' <span class="badge-hist">HIST</span>' : ""}</td>
     <td class="tc-amt">${money(t.amount)}</td>
     <td class="tc-email" data-email="${t.email}" title="Email: ${t.email}">${emailToName(t.email)}</td>
-    <td class="tc-card" style="font-size:11px;color:var(--t2)">${t.bin_info?.bank ? t.bin_info.bank.split(' ')[0] : (t.card_bin || '—')}</td>
+    <td class="tc-card" style="font-size:11px;color:var(--t2)">${t.bin_info?.bank ? t.bin_info.bank.split(" ")[0] : t.card_bin || "—"}</td>
     <td>
       <div class="sc-block">
         <span class="sc-val" style="color:${scCol(t.score)}">${t.score}</span>
         <div class="sc-track"><div class="sc-fill" style="width:${t.score}%;background:${scCol(t.score)}"></div></div>
       </div>
     </td>
-    <td><span class="pill ${pillCls(t.tier)}">${t.tier}</span></td>
+    <td><span class="pill ${pillCls(t.tier)}">${t.tier}</span>${t.is_suspicious && t.tier === "RED" ? '<span class="badge-dual">🚨 DUAL</span>' : (t.tier === "RED" || t.tier === "AMBER") && !t.is_suspicious ? ', <span class="sig sig-w" style="font-size:8px;padding:4px 4px;">SENTINEL ONLY</span>' : t.tier === "GREEN" && t.is_suspicious ? '<span class="badge-squad-only">⚠ Squad flagged</span>' : ""}</td>
+
     <td>${codes}</td>
     <td>${status}</td>
     <td>${action}</td>
@@ -477,7 +523,7 @@ function _autoAddDispute(t) {
 function pushTransaction(t) {
   if (S.transactions.some((x) => x.ref === t.ref)) return;
   // In verified mode, ignore incoming demo transactions
-  if (!S.demoMode && t.source === 'demo') return;
+  if (!S.demoMode && t.source === "demo") return;
 
   if (!t.time) t.time = fmtTime(t.timestamp);
   if (!t.status)
@@ -488,6 +534,8 @@ function pushTransaction(t) {
           ? "flagged"
           : "blocked";
   if (!t.codes) t.codes = t.reasons || [];
+  if (typeof t.is_suspicious === "undefined") t.is_suspicious = false;
+  if (!t.source) t.source = "real";
   if (t.tier === "RED") t._notifRead = false;
   S.transactions.unshift(t);
   S.total++;
@@ -517,7 +565,8 @@ function pushTransaction(t) {
   tbody.insertBefore(newRow, tbody.firstChild);
   if (tbody.rows.length > 50) tbody.deleteRow(tbody.rows.length - 1);
   // If a filter is active, apply it to the new row immediately
-  const activeQ = document.getElementById("email-search")?.value.trim().toLowerCase() || "";
+  const activeQ =
+    document.getElementById("email-search")?.value.trim().toLowerCase() || "";
   if (activeQ) applyFilter(activeQ);
   document.getElementById("feed-meta").textContent =
     `${Math.min(S.transactions.length, 50)} transactions`;
@@ -623,9 +672,9 @@ function openModal(ref) {
   const acts =
     t.tier === "GREEN"
       ? `<button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`
-      : t.tier === "AMBER"
-        ? `<button class="mb mb-ok" onclick="approveIt('${t.ref}')">✓ APPROVE</button><button class="mb mb-fl" onclick="closeModal()">⚑ FLAG</button><button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`
-        : `<button class="mb mb-rf" onclick="closeModal()">↩ REFUND</button><button class="mb mb-dp" onclick="disputeModal('${t.ref}')">⚖ FIGHT DISPUTE</button><button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`;
+           : t.tier === "AMBER"
+        ? `<button class="mb mb-ok" onclick="approveIt('${t.ref}')">✓ APPROVE</button><button class="mb mb-fl" onclick="partialRefundModal('${t.ref}', ${t.amount})">↩ PARTIAL REFUND</button><button class="mb mb-fl" onclick="closeModal()">⚑ FLAG</button><button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`
+               : `<button class="mb mb-rf" onclick="closeModal()">↩ REFUND</button><button class="mb mb-fl" onclick="cancelTokenModal('${t.ref}')">CANCEL CARD TOKEN</button><button class="mb mb-dp" onclick="disputeModal('${t.ref}')">⚖ FIGHT DISPUTE</button><button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`;
 
   document.getElementById("modal-mount").innerHTML = `
     <div class="modal-overlay" onclick="closeModal()">
@@ -643,8 +692,8 @@ function openModal(ref) {
               <div class="ibox"><div class="ibox-lbl">Amount</div><div class="ibox-val">${money(t.amount)}</div></div>
               <div class="ibox"><div class="ibox-lbl">Time</div><div class="ibox-val">${t.time || fmtTime(t.timestamp)}</div></div>
               <div class="ibox"><div class="ibox-lbl">Customer</div><div class="ibox-val">${t.email}</div></div>
-              <div class="ibox"><div class="ibox-lbl">Card</div><div class="ibox-val">${t.bin_info?.bank ? `${t.bin_info.bank} · ${t.bin_info.brand} ${t.bin_info.type}` : (t.card_bin || '—')}</div></div>
-              <div class="ibox"><div class="ibox-lbl">Card Origin</div><div class="ibox-val" style="color:${!t.bin_info ? 'var(--t3)' : t.bin_info.is_nigerian ? 'var(--jade)' : 'var(--amber)'}">${!t.bin_info ? '— Unknown' : t.bin_info.is_nigerian ? `🇳🇬 Nigerian (${t.bin_info.country})` : `Foreign (${t.bin_info.country})`}</div></div>
+              <div class="ibox"><div class="ibox-lbl">Card</div><div class="ibox-val">${t.bin_info?.bank ? `${t.bin_info.bank} · ${t.bin_info.brand} ${t.bin_info.type}` : t.card_bin || "—"}</div></div>
+              <div class="ibox"><div class="ibox-lbl">Card Origin</div><div class="ibox-val" style="color:${!t.bin_info ? "var(--t3)" : t.bin_info.is_nigerian ? "var(--jade)" : "var(--amber)"}">${!t.bin_info ? "— Unknown" : t.bin_info.is_nigerian ? `🇳🇬 Nigerian (${t.bin_info.country})` : `Foreign (${t.bin_info.country})`}</div></div>
               <div class="ibox"><div class="ibox-lbl">Status</div><div class="ibox-val">${(t.status || (t.tier === "GREEN" ? "approved" : t.tier === "AMBER" ? "flagged" : "blocked")).toUpperCase()}</div></div>
           </div></div>
           <div>
@@ -655,19 +704,44 @@ function openModal(ref) {
                 <div class="g-tier-row"><span class="pill ${pillCls(t.tier)}">${t.tier}</span>${mtag}</div>
                 <div class="g-desc">${t.tier === "GREEN" ? "Low risk — safe to process." : t.tier === "AMBER" ? "Medium risk — review before fulfillment." : "High risk — automatically blocked."}</div>
               </div>
+            </div>
+          </div>
+          <div><div class="m-sec-lbl">Squad Intelligence</div>
+
+            <div class="squad-intel-box">
+              <div class="si-row">
+                <span class="si-label">Squad Flag</span>
+                <span class="si-val" style="color:${t.is_suspicious ? 'var(--crimson)' : 'var(--jade)'}">
+                  ${t.is_suspicious ? 'SUSPICIOUS' : 'CLEAR'}
+                </span>
+              </div>
+              <div class="si-row">
+                <span class="si-label">Sentinel Score</span>
+                <span class="si-val">${t.score}/100 — ${t.tier}</span>
+              </div>
+              <div class="si-combined">
+                ${t.tier === 'RED' && t.is_suspicious ? '🚨 DUAL CONFIRMED FRAUD' :
+                  (t.tier === 'RED' || t.tier === 'AMBER') && !t.is_suspicious ? '⚠️ SENTINEL CAUGHT IT' :
+                  t.tier === 'GREEN' && t.is_suspicious ? '⚠️ SQUAD FLAGGED IT' :
+                  '✅ BOTH CLEAR'}
+              </div>
             </div></div>
             <div><div class="m-sec-lbl">Risk Signals</div>${reasons}</div>
           ${feats ? `<div><div class="m-sec-lbl">Feature Deviations</div>${feats}</div>` : ""}
-          ${t.tier === 'RED' ? `<div><div class="m-sec-lbl">Fraudster Profile</div><div style="background:#0b0b0b;border-left:3px solid var(--crimson);border-radius:4px;padding:14px 16px;font-family:var(--ff-mono);font-size:11px;line-height:2;">
+          ${
+            t.tier === "RED"
+              ? `<div><div class="m-sec-lbl">Fraudster Profile</div><div style="background:#0b0b0b;border-left:3px solid var(--crimson);border-radius:4px;padding:14px 16px;font-family:var(--ff-mono);font-size:11px;line-height:2;">
             <div style="color:var(--crimson);letter-spacing:.08em;margin-bottom:8px">■ FRAUDSTER PROFILE</div>
             <div style="border-bottom:1px solid #1e293b;margin-bottom:10px;"></div>
-            <div><span style="color:var(--crimson);display:inline-block;width:72px">Operates:</span><span style="color:var(--t2)">${(t.codes||[]).includes('OFF_HOURS') ? 'Between 2am–4am WAT' : 'During business hours'}</span></div>
-            <div><span style="color:var(--crimson);display:inline-block;width:72px">Identity:</span><span style="color:var(--t2)">${(t.codes||[]).includes('FIRST_TIME_PAYER') ? 'Uses new email addresses' : 'Known customer account'}</span></div>
-            <div><span style="color:var(--crimson);display:inline-block;width:72px">Method:</span><span style="color:var(--t2)">${(t.codes||[]).includes('HIGH_VELOCITY') ? 'Rapid card testing — multiple attempts' : 'Single attempt'}</span></div>
-            <div><span style="color:var(--crimson);display:inline-block;width:72px">Card:</span><span style="color:var(--t2)">${(t.codes||[]).includes('BIN_PATTERN') ? 'BIN linked to multiple identities' : 'Single card use'}</span></div>
-            <div><span style="color:var(--crimson);display:inline-block;width:72px">Pattern:</span><span style="color:var(--t2)">${(t.codes||[]).includes('ROUND_AMOUNT') ? 'Tests with round amounts' : 'Realistic spend pattern'}</span></div>
-            <div style="border-top:1px solid #1e293b;margin-top:10px;padding-top:10px;"><span style="color:var(--crimson);display:inline-block;width:72px">Risk:</span><span style="color:var(--t2)">Score ${t.score}/100 — ${(t.codes||[]).length} signal${(t.codes||[]).length !== 1 ? 's' : ''} detected</span></div>
-          </div></div>` : ''}
+            <div><span style="color:var(--crimson);display:inline-block;width:72px">Operates:</span><span style="color:var(--t2)">${(t.codes || []).includes("OFF_HOURS") ? "Between 2am–4am WAT" : "During business hours"}</span></div>
+            <div><span style="color:var(--crimson);display:inline-block;width:72px">Identity:</span><span style="color:var(--t2)">${(t.codes || []).includes("FIRST_TIME_PAYER") ? "Uses new email addresses" : "Known customer account"}</span></div>
+            <div><span style="color:var(--crimson);display:inline-block;width:72px">Method:</span><span style="color:var(--t2)">${(t.codes || []).includes("HIGH_VELOCITY") ? "Rapid card testing — multiple attempts" : "Single attempt"}</span></div>
+            <div><span style="color:var(--crimson);display:inline-block;width:72px">Card:</span><span style="color:var(--t2)">${(t.codes || []).includes("BIN_PATTERN") ? "BIN linked to multiple identities" : "Single card use"}</span></div>
+            <div><span style="color:var(--crimson);display:inline-block;width:72px">Pattern:</span><span style="color:var(--t2)">${(t.codes || []).includes("ROUND_AMOUNT") ? "Tests with round amounts" : "Realistic spend pattern"}</span></div>
+            <div style="border-top:1px solid #1e293b;margin-top:10px;padding-top:10px;"><span style="color:var(--crimson);display:inline-block;width:72px">Risk:</span><span style="color:var(--t2)">Score ${t.score}/100 — ${(t.codes || []).length} signal${(t.codes || []).length !== 1 ? "s" : ""} detected</span></div>
+          </div></div>`
+              : ""
+          }
           <div><div class="m-sec-lbl">Raw Payload</div><div class="raw">${JSON.stringify(t, null, 2)}</div></div>
         </div>
         <div class="modal-acts">${acts}</div>
@@ -701,9 +775,11 @@ function generateReport(ref) {
       "Sudden jump from small habitual amounts to a large payment",
     HIGH_VALUE_NEW: "First-time customer with an unusually high payment amount",
     FOREIGN_CARD: "Card BIN identified as issued outside Nigeria",
-    PREPAID_CARD: "Prepaid card — elevated chargeback risk in Nigerian e-commerce",
+    PREPAID_CARD:
+      "Prepaid card — elevated chargeback risk in Nigerian e-commerce",
     UNKNOWN_BIN: "Card BIN not found in issuer database — origin unverifiable",
-    STAT_ANOMALY: "Amount is more than 2 standard deviations above customer average",
+    STAT_ANOMALY:
+      "Amount is more than 2 standard deviations above customer average",
     ML_HIGH_RISK: "Isolation Forest ML model: high fraud probability",
     ML_MEDIUM_RISK: "Isolation Forest ML model: elevated fraud risk",
   };
@@ -956,7 +1032,7 @@ function approveIt(ref) {
   closeModal();
   renderFeed();
   syncKPIs();
-  refreshTagCloud();  
+  refreshTagCloud();
   fetch(`/api/transactions/${encodeURIComponent(ref)}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -1173,7 +1249,7 @@ function startDemo() {
   S.demoTimer = setInterval(() => {
     const r = Math.random();
     if (r < 0.15) simulateRed();
-    else if (r < 0.30) simulateAmber();
+    else if (r < 0.3) simulateAmber();
     else simulateGreen();
   }, 45000);
   //
@@ -1301,9 +1377,9 @@ function toggleDemoFromSettings(checkbox) {
   }
 }
 
-// Squad Merchant Setup 
+// Squad Merchant Setup
 
-const STORAGE_KEY = 'sentinel_merchant';
+const STORAGE_KEY = "sentinel_merchant";
 
 function checkMerchantSetup() {
   const stored = localStorage.getItem(STORAGE_KEY);
@@ -1317,110 +1393,299 @@ function checkMerchantSetup() {
       localStorage.removeItem(STORAGE_KEY);
     }
   }
-  document.getElementById('setup-screen').style.display = 'flex';
+  document.getElementById("setup-screen").style.display = "flex";
 }
 
 function toggleKeyVisibility() {
-  const input = document.getElementById('squad-key-input');
-  const icon  = document.getElementById('eye-icon');
-  const show  = input.type === 'password';
-  input.type  = show ? 'text' : 'password';
-  icon.style.opacity = show ? '1' : '0.4';
+  const input = document.getElementById("squad-key-input");
+  const icon = document.getElementById("eye-icon");
+  const show = input.type === "password";
+  input.type = show ? "text" : "password";
+  icon.style.opacity = show ? "1" : "0.4";
 }
 
 async function verifyAndActivate() {
-  const input = document.getElementById('squad-key-input');
-  const btn   = document.getElementById('setup-btn');
-  const text  = document.getElementById('setup-btn-text');
-  const spin  = document.getElementById('setup-btn-spinner');
-  const err   = document.getElementById('setup-error');
+  const input = document.getElementById("squad-key-input");
+  const btn = document.getElementById("setup-btn");
+  const text = document.getElementById("setup-btn-text");
+  const spin = document.getElementById("setup-btn-spinner");
+  const err = document.getElementById("setup-error");
 
   const key = input.value.trim();
-  err.style.display = 'none';
+  err.style.display = "none";
 
-  if (!key) { _setupError('Please paste your Squad API key.'); input.focus(); return; }
-  if (key.length < 20) { _setupError("That doesn't look like a valid Squad key — it's too short."); return; }
+  if (!key) {
+    _setupError("Please paste your Squad API key.");
+    input.focus();
+    return;
+  }
+  if (key.length < 20) {
+    _setupError("That doesn't look like a valid Squad key — it's too short.");
+    return;
+  }
 
   btn.disabled = true;
-  text.style.display = 'none';
-  spin.style.display = 'inline-block';
+  text.style.display = "none";
+  spin.style.display = "inline-block";
 
   try {
-    const res  = await fetch('/api/verify-merchant', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ api_key: key }),
+    const res = await fetch("/api/verify-merchant", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ api_key: key }),
     });
     const data = await res.json();
 
     if (!res.ok || !data.valid) {
-      _setupError(data.error || 'Verification failed — check your key and try again.');
+      _setupError(
+        data.error || "Verification failed — check your key and try again.",
+      );
       return;
     }
 
+    /*HISTORICAL IMPORT*/
+    const text = document.getElementById("setup-btn-text");
+    text.textContent = "Scanning your last 30 days of Squad transactions…";
+    text.style.display = "inline";
+
+    let importResult = null;
+    if (data.environment !== "demo") {
+      try {
+        importResult = await fetch("/api/history/import?days=30", {
+          method: "POST",
+        }).then((r) => r.json());
+      } catch (_) {
+        importResult = { imported: 0, flagged: 0, blocked: 0, days: 30 };
+      }
+    }
+
     const info = {
-      business_name: data.business_name || 'Squad Merchant',
-      environment:   data.environment   || 'sandbox',
-      connected_at:  new Date().toISOString(),
+      business_name: data.business_name || "Squad Merchant",
+      environment: data.environment || "sandbox",
+      connected_at: new Date().toISOString(),
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(info));
-    _showSuccess(info);
-
+    _showSuccess(info, importResult);
   } catch (_) {
-    _setupError('Network error — make sure the Sentinel server is running.');
+    _setupError("Network error make sure the Sentinel server is running.");
   } finally {
     btn.disabled = false;
-    text.style.display = 'inline';
-    spin.style.display = 'none';
+    text.style.display = "inline";
+    spin.style.display = "none";
   }
 }
 
 function activateDemoMode() {
-  const info = { business_name: 'Demo Mode', environment: 'demo', connected_at: new Date().toISOString() };
+  const info = {
+    business_name: "Demo Mode",
+    environment: "demo",
+    connected_at: new Date().toISOString(),
+  };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(info));
+  _applyMerchantBadge(info);
   _launchDashboard(info);
 }
 
 function _setupError(msg) {
-  const el = document.getElementById('setup-error');
+  const el = document.getElementById("setup-error");
   el.textContent = msg;
-  el.style.display = 'block';
-  document.getElementById('squad-key-input').focus();
+  el.style.display = "block";
+  document.getElementById("squad-key-input").focus();
 }
 
-function _showSuccess(info) {
-  const btn  = document.getElementById('setup-btn');
-  const text = document.getElementById('setup-btn-text');
-  btn.style.background = '#2ed573';
-  btn.style.color = '#0c0c0e';
-  text.textContent = 'Verified — Welcome, ' + info.business_name;
-  text.style.display = 'inline';
-  setTimeout(() => _launchDashboard(info), 1200);
+function _showSuccess(info, importResult) {
+  const btn = document.getElementById("setup-btn");
+  const text = document.getElementById("setup-btn-text");
+  btn.style.background = "#2ed573";
+  btn.style.color = "#0c0c0e";
+  text.textContent = "Verified — Welcome, " + info.business_name;
+  text.style.display = "inline";
+  setTimeout(() => _launchDashboard(info, importResult), 1200);
 }
 
-function _launchDashboard(info) {
-  const screen = document.getElementById('setup-screen');
-  screen.style.transition = 'opacity .4s';
-  screen.style.opacity = '0';
+function _launchDashboard(info, importResult) {
+  const screen = document.getElementById("setup-screen");
+  screen.style.transition = "opacity .4s";
+  screen.style.opacity = "0";
   setTimeout(() => {
-    screen.style.display = 'none';
+    screen.style.display = "none";
     _applyMerchantBadge(info);
     _initDashboard();
+    if (importResult && importResult.imported > 0) {
+      showImportBanner(importResult);
+    }
   }, 400);
 }
 
 function _applyMerchantBadge(info) {
-  const badge = document.getElementById('merchant-badge');
+  const badge = document.getElementById("merchant-badge");
   if (!badge) return;
-  if (info.environment === 'demo') {
-    badge.textContent = 'Demo Mode';
-    badge.className   = 'logo-sub merchant-demo';
+  if (info.environment === "demo") {
+    badge.textContent = "Demo Mode";
+    badge.className = "logo-sub merchant-demo";
   } else {
-    badge.textContent = info.business_name + ' · Squad Verified \u2713';
-    badge.className   = 'logo-sub merchant-verified';
+    badge.textContent = info.business_name + " · Squad Verified \u2713";
+    badge.className = "logo-sub merchant-verified";
+  }
+  const chip = document.getElementById("merchant-chip-name");
+  if (chip) {
+    chip.textContent = info.business_name;
+    chip.parentElement.style.visibility = "visible";
   }
 }
 
+function showImportBanner(result) {
+  const banner = document.createElement("div");
+  banner.className = "import-banner";
+  banner.innerHTML = `
+    <span>Sentinel scanned your last 30 days</span>
+    <span style="margin-left:auto">${result.imported} analysed · 🔴 ${result.blocked} blocked · 🟡 ${result.flagged} flagged</span>
+    <span style="margin-left:12px;opacity:.6;cursor:pointer">✕</span>
+  `;
+  banner.onclick = () => banner.remove();
+  const content = document.querySelector(".content");
+  content.insertBefore(banner, content.firstChild);
+  setTimeout(() => banner.remove(), 8000);
+}
+function partialRefundModal(ref, fullAmount) {
+  const t = S.transactions.find((x) => x.ref === ref);
+  if (!t) return;
+
+  const halfAmount = Math.round(fullAmount / 2);
+  const halfMoney = money(halfAmount);
+
+  closeModal();
+  document.getElementById("modal-mount").innerHTML = `
+    <div class="modal-overlay" onclick="closeModal()">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-top">
+          <div><div class="m-ref-lbl">Partial Refund</div><div class="m-ref-val">${ref}</div></div>
+          <button class="m-x" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="i2col">
+            <div class="ibox"><div class="ibox-lbl">Full Amount</div><div class="ibox-val">${money(fullAmount)}</div></div>
+            <div class="ibox"><div class="ibox-lbl">Customer</div><div class="ibox-val">${t.email}</div></div>
+          </div>
+          <div>
+            <div class="m-sec-lbl">Refund Amount (kobo)</div>
+            <input type="number" id="refund-amount" class="setup-input" value="${halfAmount}" style="width:100%;margin-bottom:8px" oninput="document.getElementById('refund-display').textContent = '₦' + (Number(this.value)/100).toLocaleString()">
+            <div id="refund-display" style="font-family:var(--ff-mono);color:var(--teal);font-size:13px">${halfMoney}</div>
+          </div>
+          <div style="font-size:11px;color:var(--t3);line-height:1.6">
+            This will issue a partial refund to the customer's card. The transaction will remain flagged for review.
+          </div>
+        </div>
+        <div class="modal-acts">
+          <button class="mb mb-ok" onclick="submitPartialRefund('${ref}')">↩ ISSUE REFUND</button>
+          <button class="mb mb-cl" onclick="closeModal()">CANCEL</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function submitPartialRefund(ref) {
+  const input = document.getElementById('refund-amount');
+  const amount = Number(input?.value || 0);
+  
+  if (!amount || amount <= 0) {
+    alert('Please enter a valid refund amount');
+    return;
+  }
+
+  fetch(`/api/transactions/${encodeURIComponent(ref)}/partial-refund`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ amount: amount }),
+  })
+    .then((r) => r.json())
+    .then(() => {
+      const t = S.transactions.find((x) => x.ref === ref);
+      if (t) {
+        t.status = 'partial-refunded';
+        t.tier = 'AMBER';
+      }
+      closeModal();
+      renderFeed();
+      syncKPIs();
+      refreshTagCloud();
+      
+      const el = document.createElement("div");
+      el.className = "toast toast-g";
+      el.innerHTML = `<span class="t-icon">✅</span><div class="t-body"><strong>PARTIAL REFUND ISSUED</strong><br/>${money(amount)} refunded to customer</div>`;
+      document.getElementById("toasts").appendChild(el);
+      setTimeout(() => el.remove(), 3500);
+    })
+    .catch(() => {
+      const el = document.createElement("div");
+      el.className = "toast toast-r";
+      el.innerHTML = `<span class="t-icon">🚫</span><div class="t-body"><strong>REFUND FAILED</strong><br/>Could not process partial refund</div>`;
+      document.getElementById("toasts").appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    });
+}
+
+function cancelTokenModal(ref) {
+  const t = S.transactions.find((x) => x.ref === ref);
+  if (!t) return;
+
+  closeModal();
+  document.getElementById("modal-mount").innerHTML = `
+    <div class="modal-overlay" onclick="closeModal()">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-top">
+          <div><div class="m-ref-lbl">Cancel Stored Card Token</div><div class="m-ref-val">${ref}</div></div>
+          <button class="m-x" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div style="background:var(--crimson-dim);border:1px solid rgba(255,71,87,0.3);border-radius:var(--r);padding:14px;margin-bottom:8px">
+            <div style="color:var(--crimson);font-family:var(--ff-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px"> PERMANENT ACTION</div>
+            <div style="font-size:12px;color:var(--t2);line-height:1.7">
+              This permanently revokes the saved card token for this customer.<br/>
+              Future recurring charges will fail.<br/>
+              <strong style="color:var(--crimson)">This cannot be undone.</strong>
+            </div>
+          </div>
+          <div class="i2col">
+            <div class="ibox"><div class="ibox-lbl">Customer</div><div class="ibox-val">${t.email}</div></div>
+            <div class="ibox"><div class="ibox-lbl">Card</div><div class="ibox-val">${t.bin_info?.bank ? t.bin_info.bank.split(' ')[0] : (t.card_bin || '—')}</div></div>
+          </div>
+        </div>
+        <div class="modal-acts">
+          <button class="mb mb-rf" onclick="submitCancelToken('${ref}')">CONFIRM CANCEL</button>
+          <button class="mb mb-cl" onclick="closeModal()">GO BACK</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function submitCancelToken(ref) {
+  fetch(`/api/transactions/${encodeURIComponent(ref)}/cancel-token`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token_ref: ref }),
+  })
+    .then((r) => r.json())
+    .then(() => {
+      const t = S.transactions.find((x) => x.ref === ref);
+      if (t) t.token_cancelled = true;
+      closeModal();
+      renderFeed();
+      
+      const el = document.createElement("div");
+      el.className = "toast toast-g";
+      el.innerHTML = `<span class="t-icon">🔒</span><div class="t-body"><strong>CARD TOKEN CANCELLED</strong><br/>Future charges blocked for this customer</div>`;
+      document.getElementById("toasts").appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    })
+    .catch(() => {
+      const el = document.createElement("div");
+      el.className = "toast toast-r";
+      el.innerHTML = `<span class="t-icon">🚫</span><div class="t-body"><strong>CANCEL FAILED</strong><br/>Could not revoke card token</div>`;
+      document.getElementById("toasts").appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    });
+}
 function resetMerchantSetup() {
   localStorage.removeItem(STORAGE_KEY);
   location.reload();

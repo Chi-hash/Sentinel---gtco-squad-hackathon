@@ -136,22 +136,24 @@ function simulateGreen() {
 }
 
 function simulateAmber() {
+  name:             _nameFromEmail(email),
   _post({
     transaction_ref:  _ref(),
     amount:           _pick(AMOUNTS_AMBER),
-    email:            _amberEmail(),
-    name:             _nameFromEmail(email),
+    email:            email,     
+    name:             _nameFromEmail(email), 
     card_bin:         _pick(BINS_AMBER),
     transaction_date: new Date().toISOString(),
   });
 }
 
 function simulateRed() {
+  const email = _badEmail(); 
   _post({
     transaction_ref:  _ref(),
     amount:           _pick(AMOUNTS_RED),
-    email:            _badEmail(),
-    name:             _nameFromEmail(email),
+    email:            email,     // ← use the variable
+    name:             _nameFromEmail(email),  
     card_bin:         _pick(BINS_RED),
     transaction_date: new Date().toISOString(),
   });
