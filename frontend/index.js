@@ -444,19 +444,20 @@ function buildRow(t, anim) {
     ? (t.codes || []).map((c) => `<span class="sig ${sigClass(c)}">${c}</span>`)
     : `<span style="color:var(--t3);font-family:var(--ff-mono);font-size:10px">—</span>`;
 
-     const status =
+  const status =
     t.status === "approved"
       ? `<span class="st-ok"><span>●</span><span>APPROVED</span></span>`
       : t.status === "flagged"
         ? `<span class="st-fl"><span>◆</span><span>FLAGGED</span></span>`
         : t.status === "partial-refunded"
           ? `<span class="st-pr"><span>↩</span><span>PARTIAL REFUND</span></span>`
-          : `<span class="st-blk"><span>■</span><span>BLOCKED</span></span>${t.token_cancelled ? ' <span style="font-size:10px">🔒</span>' : ''}`; 
+          : `<span class="st-blk"><span>■</span><span>BLOCKED</span></span>${t.token_cancelled ? ' <span style="font-size:10px">🔒</span>' : ''}`;
 
   const action =
     t.tier === "AMBER" && t.status === "flagged"
       ? `<button class="tbl-btn tb-rv" onclick="event.stopPropagation();openModal('${t.ref}')">REVIEW</button>`
       : "";
+
   const fmtDate = (iso) => {
     if (!iso) return "—";
     const d = new Date(iso);
@@ -479,8 +480,6 @@ function buildRow(t, anim) {
         <div class="sc-track"><div class="sc-fill" style="width:${t.score}%;background:${scCol(t.score)}"></div></div>
       </div>
     </td>
-    <td><span class="pill ${pillCls(t.tier)}">${t.tier}</span>${t.is_suspicious && t.tier === "RED" ? '<span class="badge-dual">🚨 DUAL</span>' : (t.tier === "RED" || t.tier === "AMBER") && !t.is_suspicious ? ', <span class="sig sig-w" style="font-size:8px;padding:4px 4px;">SENTINEL ONLY</span>' : t.tier === "GREEN" && t.is_suspicious ? '<span class="badge-squad-only">⚠ Squad flagged</span>' : ""}</td>
-
     <td>${codes}</td>
     <td>${status}</td>
     <td>${action}</td>
