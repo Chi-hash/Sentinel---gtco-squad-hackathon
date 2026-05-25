@@ -60,8 +60,8 @@ async function getTransactionHistory(days = 30) {
     // Squad returns { status: 200, data: { transactions: [...] } } or similar
     const list =
       data?.data?.transactions ||
-      data?.data            ||
-      data?.transactions    ||
+      data?.data ||
+      data?.transactions ||
       [];
     return Array.isArray(list) ? list : [];
   } catch (err) {
@@ -132,9 +132,9 @@ async function challengeDispute(transactionRef) {
 // Verify an API key belongs to a real Squad merchant.
 // Returns { valid, business_name, environment } or { valid: false, error }.
 async function verifyMerchantKey(apiKey) {
-  const key      = String(apiKey || '').trim();
+  const key = String(apiKey || '').trim();
   const isSandbox = key.startsWith('sandbox_');
-  const base     = isSandbox ? 'https://sandbox-api-d.squadco.com' : 'https://api-d.squadco.com';
+  const base = isSandbox ? 'https://sandbox-api-d.squadco.com' : 'https://api-d.squadco.com';
 
   try {
     const { data } = await axios.get(`${base}/account/balance`, {
@@ -144,7 +144,7 @@ async function verifyMerchantKey(apiKey) {
     const name =
       data?.data?.merchant_account_details?.account_name ||
       data?.data?.account_name ||
-      data?.data?.merchant_id  ||
+      data?.data?.merchant_id ||
       'Squad Merchant';
     return { valid: true, business_name: name, environment: isSandbox ? 'sandbox' : 'live' };
   } catch (err) {

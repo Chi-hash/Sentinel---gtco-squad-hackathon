@@ -59,12 +59,12 @@ function _initDashboard() {
   const stored = localStorage.getItem(STORAGE_KEY);
   const merchantInfo = stored
     ? (() => {
-        try {
-          return JSON.parse(stored);
-        } catch {
-          return null;
-        }
-      })()
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return null;
+      }
+    })()
     : null;
   const isDemo = !merchantInfo || merchantInfo.environment === "demo";
 
@@ -99,14 +99,13 @@ function hydrateFromDB() {
           reasons: r.reasons || [],
           features: r.features || {},
           status:
-            r.action_taken === "refunded"
-              ? "blocked"
+            r.action_taken === "refunded" ? "blocked"
               : r.action_taken ||
-                (r.tier === "GREEN"
-                  ? "approved"
-                  : r.tier === "AMBER"
-                    ? "flagged"
-                    : "blocked"),
+              (r.tier === "GREEN"
+                ? "approved"
+                : r.tier === "AMBER"
+                  ? "flagged"
+                  : "blocked"),
           time: fmtTime(r.timestamp),
           timestamp: r.timestamp,
           model_trained: true,
@@ -138,7 +137,7 @@ function hydrateFromDB() {
         }
       }
     })
-    .catch(() => {});
+    .catch(() => { });
 }
 
 function toggleSidebar() {
@@ -643,34 +642,34 @@ function openModal(ref) {
 
   const reasons = (t.codes || []).length
     ? (t.codes || [])
-        .map(
-          (c) =>
-            `<div class="rsn-row"><span class="rsn-code" style="color:${col}">${c}</span><span class="rsn-desc">${RSN[c] || "Risk signal triggered"}</span></div>`,
-        )
-        .join("")
+      .map(
+        (c) =>
+          `<div class="rsn-row"><span class="rsn-code" style="color:${col}">${c}</span><span class="rsn-desc">${RSN[c] || "Risk signal triggered"}</span></div>`,
+      )
+      .join("")
     : `<div style="color:var(--jade);font-family:var(--ff-mono);font-size:11px;padding:6px 0">No risk signals</div>`;
 
   const feats = t.features
     ? Object.entries(t.features)
-        .map(([k, v]) => {
-          const fv = parseFloat(v),
-            fc =
-              fv > 2
-                ? "var(--crimson)"
-                : fv > 1
-                  ? "var(--amber)"
-                  : "var(--jade)";
-          return `<div class="ft-row"><span class="ft-k">${k}</span><span class="ft-v" style="color:${fc}">${v}</span></div>`;
-        })
-        .join("")
+      .map(([k, v]) => {
+        const fv = parseFloat(v),
+          fc =
+            fv > 2
+              ? "var(--crimson)"
+              : fv > 1
+                ? "var(--amber)"
+                : "var(--jade)";
+        return `<div class="ft-row"><span class="ft-k">${k}</span><span class="ft-v" style="color:${fc}">${v}</span></div>`;
+      })
+      .join("")
     : "";
 
   const acts =
     t.tier === "GREEN"
       ? `<button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`
-           : t.tier === "AMBER"
+      : t.tier === "AMBER"
         ? `<button class="mb mb-ok" onclick="approveIt('${t.ref}')">APPROVE</button><button class="mb mb-fl" onclick="partialRefundModal('${t.ref}', ${t.amount})">PARTIAL REFUND</button><button class="mb mb-fl" onclick="closeModal()">FLAG</button><button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`
-               : `<button class="mb mb-rf" onclick="closeModal()">REFUND</button><button class="mb mb-fl" onclick="cancelTokenModal('${t.ref}')">CANCEL CARD TOKEN</button><button class="mb mb-dp" onclick="disputeModal('${t.ref}')">FIGHT DISPUTE</button><button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`;
+        : `<button class="mb mb-rf" onclick="closeModal()">REFUND</button><button class="mb mb-fl" onclick="cancelTokenModal('${t.ref}')">CANCEL CARD TOKEN</button><button class="mb mb-dp" onclick="disputeModal('${t.ref}')">FIGHT DISPUTE</button><button class="mb mb-cl" onclick="closeModal()">CLOSE</button>`;
 
   document.getElementById("modal-mount").innerHTML = `
     <div class="modal-overlay" onclick="closeModal()">
@@ -717,16 +716,15 @@ function openModal(ref) {
               </div>
               <div class="si-combined">
                 ${t.tier === 'RED' && t.is_suspicious ? 'DUAL CONFIRMED FRAUD' :
-                  (t.tier === 'RED' || t.tier === 'AMBER') && !t.is_suspicious ? 'SENTINEL CAUGHT IT' :
-                  t.tier === 'GREEN' && t.is_suspicious ? 'SQUAD FLAGGED IT' :
-                  'BOTH CLEAR'}
+      (t.tier === 'RED' || t.tier === 'AMBER') && !t.is_suspicious ? 'SENTINEL CAUGHT IT' :
+        t.tier === 'GREEN' && t.is_suspicious ? 'SQUAD FLAGGED IT' :
+          'BOTH CLEAR'}
               </div>
             </div></div>
             <div><div class="m-sec-lbl">Risk Signals</div>${reasons}</div>
           ${feats ? `<div><div class="m-sec-lbl">Feature Deviations</div>${feats}</div>` : ""}
-          ${
-            t.tier === "RED"
-              ? `<div><div class="m-sec-lbl">Fraudster Profile</div><div style="background:#0b0b0b;border-left:3px solid var(--crimson);border-radius:4px;padding:14px 16px;font-family:var(--ff-mono);font-size:11px;line-height:2;">
+          ${t.tier === "RED"
+      ? `<div><div class="m-sec-lbl">Fraudster Profile</div><div style="background:#0b0b0b;border-left:3px solid var(--crimson);border-radius:4px;padding:14px 16px;font-family:var(--ff-mono);font-size:11px;line-height:2;">
             <div style="color:var(--crimson);letter-spacing:.08em;margin-bottom:8px">■ FRAUDSTER PROFILE</div>
             <div style="border-bottom:1px solid #1e293b;margin-bottom:10px;"></div>
             <div><span style="color:var(--crimson);display:inline-block;width:72px">Operates:</span><span style="color:var(--t2)">${(t.codes || []).includes("OFF_HOURS") ? "Between 2am–4am WAT" : "During business hours"}</span></div>
@@ -736,8 +734,8 @@ function openModal(ref) {
             <div><span style="color:var(--crimson);display:inline-block;width:72px">Pattern:</span><span style="color:var(--t2)">${(t.codes || []).includes("ROUND_AMOUNT") ? "Tests with round amounts" : "Realistic spend pattern"}</span></div>
             <div style="border-top:1px solid #1e293b;margin-top:10px;padding-top:10px;"><span style="color:var(--crimson);display:inline-block;width:72px">Risk:</span><span style="color:var(--t2)">Score ${t.score}/100 — ${(t.codes || []).length} signal${(t.codes || []).length !== 1 ? "s" : ""} detected</span></div>
           </div></div>`
-              : ""
-          }
+      : ""
+    }
           <div><div class="m-sec-lbl">Raw Payload</div><div class="raw">${JSON.stringify(t, null, 2)}</div></div>
         </div>
         <div class="modal-acts">${acts}</div>
@@ -782,25 +780,25 @@ function generateReport(ref) {
 
   const reasonsHtml = (t.codes || []).length
     ? (t.codes || [])
-        .map(
-          (c) => `
+      .map(
+        (c) => `
         <tr>
           <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;vertical-align:top">
             <span style="font-family:monospace;font-size:11px;font-weight:700;color:${col};background:${colBg};padding:2px 8px;border-radius:4px;border:1px solid ${col}">${c}</span>
           </td>
           <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;color:#475569;font-size:13px;vertical-align:top">${SIGNAL_DESC[c] || "Risk signal triggered"}</td>
         </tr>`,
-        )
-        .join("")
+      )
+      .join("")
     : `<tr><td colspan="2" style="padding:10px 12px;color:#94a3b8;font-style:italic">No risk signals detected</td></tr>`;
 
   const featuresHtml = t.features
     ? Object.entries(t.features)
-        .map(([k, v]) => {
-          const fv = parseFloat(v);
-          const fc = fv > 2 ? "#dc2626" : fv > 1 ? "#d97706" : "#16a34a";
-          const bar = Math.min(100, fv * 20);
-          return `<tr>
+      .map(([k, v]) => {
+        const fv = parseFloat(v);
+        const fc = fv > 2 ? "#dc2626" : fv > 1 ? "#d97706" : "#16a34a";
+        const bar = Math.min(100, fv * 20);
+        return `<tr>
           <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:12px;font-family:monospace">${k}</td>
           <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0">
             <div style="display:flex;align-items:center;gap:10px">
@@ -811,8 +809,8 @@ function generateReport(ref) {
             </div>
           </td>
         </tr>`;
-        })
-        .join("")
+      })
+      .join("")
     : "";
 
   const plain =
@@ -963,8 +961,7 @@ th { background: #f1f5f9; padding: 8px 12px; text-align: left; font-size: 10px; 
     </div>
   </div>
 
-  ${
-    featuresHtml
+  ${featuresHtml
       ? `
   <div class="sec">
     <div class="sec-title">Feature Deviations</div>
@@ -974,7 +971,7 @@ th { background: #f1f5f9; padding: 8px 12px; text-align: left; font-size: 10px; 
     </table>
   </div>`
       : ""
-  }
+    }
 
   <!-- Plain English -->
   <div class="sec">
@@ -1033,7 +1030,7 @@ function approveIt(ref) {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ status: "approved", tier: "GREEN" }),
-  }).catch(() => {});
+  }).catch(() => { });
   const el = document.createElement("div");
   el.className = "toast toast-g";
   el.innerHTML = `<span class="t-icon">✅</span><div class="t-body"><strong>APPROVED</strong><br/>Transaction approved and saved</div>`;
@@ -1094,7 +1091,7 @@ function submitEvidence(ref) {
   renderDisputes();
   fetch(`/api/disputes/${encodeURIComponent(ref)}/submit`, {
     method: "POST",
-  }).catch(() => {});
+  }).catch(() => { });
   const el = document.createElement("div");
   el.className = "toast toast-g";
   el.innerHTML = `<span class="t-icon">✅</span><div class="t-body"><strong>SUBMITTED</strong><br/>Evidence sent to Squad Disputes API</div>`;
@@ -1113,11 +1110,10 @@ function renderDisputes() {
       <td style="color:var(--t2);font-size:11px">${d.reason}</td>
       <td><span class="sc-val" style="color:var(--crimson);font-family:var(--ff-mono)">${d.score}</span></td>
       <td><span class="pill ${d.status === "open" ? "pill-r" : "pill-g"}">${d.status === "open" ? "OPEN" : "SUBMITTED"}</span></td>
-      <td>${
-        d.status === "open"
+      <td>${d.status === "open"
           ? `<button class="tbl-btn tb-ft" onclick="disputeModal('${d.ref}')">FIGHT</button>`
           : `<span style="color:var(--jade);font-family:var(--ff-mono);font-size:10px">● SENT</span>`
-      }</td>
+        }</td>
      </tr>`,
     )
     .join("");
@@ -1578,7 +1574,7 @@ function partialRefundModal(ref, fullAmount) {
 function submitPartialRefund(ref) {
   const input = document.getElementById('refund-amount');
   const amount = Number(input?.value || 0);
-  
+
   if (!amount || amount <= 0) {
     alert('Please enter a valid refund amount');
     return;
@@ -1600,7 +1596,7 @@ function submitPartialRefund(ref) {
       renderFeed();
       syncKPIs();
       refreshTagCloud();
-      
+
       const el = document.createElement("div");
       el.className = "toast toast-g";
       el.innerHTML = `<span class="t-icon">✅</span><div class="t-body"><strong>PARTIAL REFUND ISSUED</strong><br/>${money(amount)} refunded to customer</div>`;
@@ -1662,7 +1658,7 @@ function submitCancelToken(ref) {
       if (t) t.token_cancelled = true;
       closeModal();
       renderFeed();
-      
+
       const el = document.createElement("div");
       el.className = "toast toast-g";
       el.innerHTML = `<span class="t-icon">🔒</span><div class="t-body"><strong>CARD TOKEN CANCELLED</strong><br/>Future charges blocked for this customer</div>`;
