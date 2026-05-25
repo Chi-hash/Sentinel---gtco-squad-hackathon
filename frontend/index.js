@@ -257,6 +257,7 @@ function sigClass(code) {
     "ML_HIGH_RISK",
     "ROUND_AMOUNT",
     "UNKNOWN_BIN",
+    "PREPAID_CARD",
     "FOREIGN_CARD",
     "SQUAD_SUSPICIOUS",
   ];
