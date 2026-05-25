@@ -45,7 +45,7 @@ async function runTests() {
   const challenge = await squadApi.challengeDispute('dummy_ref_12345');
   console.log('Result:', challenge || 'Failed/Null');
 
-  console.log('\n--- Tests Completed ---');
+  console.log('\nTests Completed');
 }
 
 runTests();
